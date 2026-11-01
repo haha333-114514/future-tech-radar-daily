@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050814">
+  <meta name="description" content="每日追踪视觉生成、超分辨率、本地 LLM、Agent 开发、开发者工具、系统底层、FPGA/VHDL 与具身智能的未来科技仪表盘。">
+  <title>前沿信号 · Future Tech Radar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23050814'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%232cf6d4' stroke-width='3'/%3E%3Cpath d='M32 14v36M14 32h36M20 20l24 24M44 20L20 44' stroke='%236e7cff' stroke-width='2' opacity='.75'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23ffdd73'/%3E%3C/svg%3E">
+  <style>
+    :root{--bg:#050814;--panel:#0a1021;--panel2:#0d1730;--line:#1b3151;--text:#e7f5ff;--muted:#8ea8be;--cyan:#2cf6d4;--blue:#6e7cff;--gold:#ffdd73;--red:#ff6f91;--glow:0 0 30px rgba(44,246,212,.12)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans SC",system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(110,124,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(110,124,255,.055) 1px,transparent 1px);background-size:52px 52px;mask-image:linear-gradient(to bottom,black,transparent 82%)}
+    a{color:inherit} button,input{font:inherit} .shell{width:min(1480px,calc(100% - 36px));margin:auto;position:relative}
+    header{height:78px;border-bottom:1px solid var(--line);display:flex;align-items:center;position:sticky;top:0;background:rgba(5,8,20,.88);backdrop-filter:blur(18px);z-index:20}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.04em}.brandmark{width:34px;height:34px;border:1px solid var(--cyan);border-radius:50%;display:grid;place-items:center;box-shadow:0 0 18px rgba(44,246,212,.18);font:600 .68rem "IBM Plex Mono";color:var(--cyan)}
+    .live{font:500 .75rem "IBM Plex Mono";color:var(--muted);display:flex;align-items:center;gap:9px}.live i{width:7px;height:7px;background:var(--cyan);border-radius:50%;box-shadow:0 0 12px var(--cyan);animation:pulse 2s infinite}@keyframes pulse{50%{opacity:.35}}
+    main{padding:44px 0 80px}.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,.75fr);gap:22px;margin-bottom:22px}
+    .hero-main,.radar,.metric,.card,.deep,.noise,.archive{border:1px solid var(--line);background:linear-gradient(145deg,rgba(13,23,48,.92),rgba(7,13,28,.92));box-shadow:var(--glow)}
+    .hero-main{padding:34px 36px;min-height:260px;position:relative;overflow:hidden}.eyebrow{font:600 .74rem "IBM Plex Mono";letter-spacing:.16em;color:var(--cyan);text-transform:uppercase}.hero h1{font-size:clamp(2.2rem,5vw,5.2rem);line-height:.98;margin:18px 0 22px;letter-spacing:-.055em}.hero h1 span{color:transparent;-webkit-text-stroke:1px var(--blue)}
+    .pulse-copy{font-size:clamp(1rem,1.7vw,1.25rem);line-height:1.75;color:#c5d8e8;max-width:850px;margin:0}.scanline{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.35;animation:scan 6s linear infinite}@keyframes scan{from{top:0}to{top:100%}}
+    .radar{min-height:260px;display:grid;place-items:center;position:relative;overflow:hidden}.orbit{width:190px;height:190px;border:1px solid #294766;border-radius:50%;position:relative;display:grid;place-items:center}.orbit:before,.orbit:after{content:"";position:absolute;border:1px solid #1d3655;border-radius:50%}.orbit:before{width:124px;height:124px}.orbit:after{width:58px;height:58px;background:rgba(44,246,212,.06)}.sweep{position:absolute;width:95px;height:95px;left:95px;top:0;transform-origin:0 95px;background:conic-gradient(from 270deg,rgba(44,246,212,.25),transparent 25%);animation:spin 4s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.radar b{font:600 .72rem "IBM Plex Mono";z-index:2;color:var(--cyan);letter-spacing:.1em}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}.metric{padding:18px 20px;display:flex;align-items:end;justify-content:space-between;min-height:90px}.metric strong{font:600 2rem "IBM Plex Mono";color:var(--gold)}.metric span{color:var(--muted);font-size:.88rem}
+    .controls{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:32px 0 18px}.filters{display:flex;flex-wrap:wrap;gap:8px}.filter{border:1px solid var(--line);background:#081024;color:var(--muted);padding:9px 13px;cursor:pointer;border-radius:2px;font-size:.85rem}.filter:hover,.filter.active{color:#03120f;background:var(--cyan);border-color:var(--cyan)}
+    .search{min-width:230px;border:1px solid var(--line);background:#081024;color:var(--text);padding:10px 13px;outline:none}.search:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(44,246,212,.08)}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{padding:22px;min-height:310px;display:flex;flex-direction:column;transition:.22s ease}.card:hover{border-color:#366488;transform:translateY(-3px);box-shadow:0 12px 45px rgba(0,0,0,.3)}.card-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.card-kicker{display:flex;align-items:center;gap:8px;min-width:0}.category{font-size:.78rem;color:var(--cyan)}.report-date{font:500 .65rem "IBM Plex Mono";color:var(--muted);padding-left:8px;border-left:1px solid var(--line)}.level{font:500 .66rem "IBM Plex Mono";letter-spacing:.08em;color:var(--gold);border:1px solid rgba(255,221,115,.35);padding:4px 7px;white-space:nowrap}.card h2{font-size:1.35rem;margin:22px 0 12px}.summary,.why{font-size:.94rem;line-height:1.72;margin:0;color:#bdd0df}.why{color:var(--muted);margin-top:12px}.meta{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0}.meta span{font:500 .69rem "IBM Plex Mono";padding:5px 7px;background:#111f39;color:#9ab5cb}.source{margin-top:auto;text-decoration:none;color:var(--cyan);font:500 .78rem "IBM Plex Mono"}.source:hover{text-decoration:underline}.empty{display:none;border:1px dashed var(--line);padding:36px;color:var(--muted);text-align:center;grid-column:1/-1}
+    .bottom{display:grid;grid-template-columns:1.55fr .9fr;gap:14px;margin-top:14px}.deep,.noise{padding:26px}.section-label{font:600 .72rem "IBM Plex Mono";color:var(--blue);letter-spacing:.13em}.deep h2{font-size:1.45rem;margin:13px 0}.deep p,.noise p{line-height:1.82;color:#b8cddd;margin:0}.noise{border-color:#50324a}.noise .section-label{color:var(--red)}.noise h2{font-size:1.2rem;margin:13px 0}
+    .archive{margin-top:28px;padding:20px 22px;display:grid;gap:14px}.archive-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.archive-label{width:74px;flex:0 0 74px;font:600 .72rem "IBM Plex Mono";color:var(--muted)}.date-list{display:flex;gap:8px;flex-wrap:wrap}.view-btn,.date-btn{border:1px solid var(--line);background:#081024;color:var(--muted);padding:8px 11px;cursor:pointer;font:500 .72rem "IBM Plex Mono"}.view-btn:hover,.view-btn.active,.date-btn:hover,.date-btn.active{color:#03120f;background:var(--cyan);border-color:var(--cyan)}.view-btn{min-width:66px}.period-summary{margin-left:auto;color:#668197;font-size:.76rem}.footer{margin-top:38px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:#668197;font:500 .7rem "IBM Plex Mono"}
+    @media(max-width:1000px){.hero{grid-template-columns:1fr}.radar{display:none}.grid{grid-template-columns:repeat(2,1fr)}.bottom{grid-template-columns:1fr}}
+    @media(max-width:680px){.shell{width:min(100% - 24px,1480px)}header{height:66px}.hero-main{padding:26px 20px;min-height:0}.hero h1{font-size:2.65rem}.metrics{grid-template-columns:repeat(2,1fr)}.controls{align-items:stretch;flex-direction:column}.search{width:100%}.grid{grid-template-columns:1fr}.card{min-height:0}.archive-label{width:100%;flex-basis:100%}.period-summary{width:100%;margin-left:0}.footer{gap:12px;flex-direction:column}.live span{display:none}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}.sweep,.scanline,.live i{animation:none}}
+    .card-links{margin-top:auto;display:flex;flex-wrap:wrap;gap:12px 18px}.card-links .source{margin-top:0}
+  </style>
+</head>
+<body>
+  <header><div class="shell topbar"><div class="brand"><div class="brandmark">FT</div><span>前沿信号 / FUTURE TECH RADAR</span></div><div class="live"><i></i><span>DAILY INTELLIGENCE FEED</span></div></div></header>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-main"><div class="scanline"></div><div class="eyebrow" id="dateLine">DAILY BRIEF · 2026-09-27</div><h1>未来科技<br><span>仪表盘</span></h1><p class="pulse-copy" id="pulse"></p></div>
+      <aside class="radar" aria-label="信号扫描状态"><div class="orbit"><div class="sweep"></div><b>SCANNING</b></div></aside>
+    </section>
+    <section class="metrics" id="metrics" aria-label="今日统计"></section>
+    <section class="controls"><div class="filters" id="filters"></div><input class="search" id="search" type="search" placeholder="搜索项目或关键词" aria-label="搜索项目或关键词"></section>
+    <section class="grid" id="grid"><div class="empty" id="empty">没有匹配的信号。</div></section>
+    <section class="bottom"><article class="deep" id="deep"></article><aside class="noise" id="noise"></aside></section>
+    <nav class="archive" aria-label="按时间范围筛选日报">
+      <div class="archive-row"><span class="archive-label">VIEW</span><div class="date-list" id="viewFilters"></div><span class="period-summary" id="periodSummary"></span></div>
+      <div class="archive-row"><span class="archive-label">PERIOD</span><div class="date-list" id="periodFilters"></div></div>
+    </nav>
+    <footer class="footer"><span>VISUAL AI · LOCAL LLM · AGENTS · DEV TOOLS · SYSTEMS · FPGA · EMBODIED AI</span><span>按技术点分类 · 事实与判断分层</span></footer>
+  </main>
+  <script src="reports.js"></script>
+  <script>
+    const reports = window.DAILY_REPORTS || [];
+    const state = { view: 'week', period: '', category: '全部', query: '' };
+    const esc = s => String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const toDate = value => new Date(`${value}T00:00:00Z`);
+    const isoDate = date => date.toISOString().slice(0,10);
+    function periodKey(date,view){
+      if(view==='day') return date;
+      if(view==='month') return date.slice(0,7);
+      if(view==='year') return date.slice(0,4);
+      const start=toDate(date); start.setUTCDate(start.getUTCDate()-start.getUTCDay()); return isoDate(start);
+    }
+    function periodLabel(key,view){
+      if(view==='day') return key;
+      if(view==='month'){const [y,m]=key.split('-');return `${y} 年 ${Number(m)} 月`;}
+      if(view==='year') return `${key} 年`;
+      const start=toDate(key),end=new Date(start);end.setUTCDate(end.getUTCDate()+6);
+      return `${String(start.getUTCMonth()+1).padStart(2,'0')}/${String(start.getUTCDate()).padStart(2,'0')}–${String(end.getUTCMonth()+1).padStart(2,'0')}/${String(end.getUTCDate()).padStart(2,'0')}`;
+    }
+    const periodsFor = view => [...new Set(reports.map(r=>periodKey(r.date,view)))];
+    state.period = periodsFor(state.view)[0] || '';
+    const currentReports = () => reports.filter(r => periodKey(r.date,state.view) === state.period);
+    const currentItems = () => currentReports().flatMap(r => r.items.map(i => ({...i, reportDate:r.date, reportLabel:r.label})));
+    const metricTotal = label => currentReports().reduce((sum,r) => sum + Number(r.metrics.find(m => m.label === label)?.value || 0), 0);
+    const viewNames = {day:'单日',week:'周',month:'月',year:'年'};
+    const viewCodes = {day:'DAILY',week:'WEEKLY',month:'MONTHLY',year:'YEARLY'};
+    function renderTimeFilters(){
+      const views=[['day','单日'],['week','周视图'],['month','月视图'],['year','年视图']];
+      document.getElementById('viewFilters').innerHTML=views.map(([value,label])=>`<button class="view-btn${state.view===value?' active':''}" data-view="${value}" aria-pressed="${state.view===value}">${label}</button>`).join('');
+      document.getElementById('periodFilters').innerHTML=periodsFor(state.view).map(key=>`<button class="date-btn${state.period===key?' active':''}" data-period="${esc(key)}" aria-pressed="${state.period===key}">${esc(periodLabel(key,state.view))}</button>`).join('');
+      document.getElementById('periodSummary').textContent=`${currentReports().length} 期日报 · ${currentItems().length} 条内容`;
+    }
+    function renderBase(){
+      const selected = currentReports();
+      const report = selected[0];
+      if(!report) return;
+      const singleDay = state.view === 'day';
+      document.getElementById('dateLine').textContent = singleDay ? `DAILY BRIEF · ${report.date}` : `${viewCodes[state.view]} VIEW · ${periodLabel(state.period,state.view)}`;
+      document.getElementById('pulse').textContent = singleDay ? report.pulse : `当前${viewNames[state.view]}视图收录 ${selected.length} 期日报、${currentItems().length} 条内容（技术信号与趣味发现）。分类与搜索只作用于当前周期。最新判断：${report.pulse}`;
+      const metrics = singleDay ? report.metrics : [
+        {value:selected.length,label:'周期内日报'},
+        {value:currentItems().length,label:'项目与信号'},
+        {value:metricTotal('本地可部署'),label:'本地可部署'},
+        {value:metricTotal('具身进展'),label:'具身进展'}
+      ];
+      document.getElementById('metrics').innerHTML = metrics.map(m => `<article class="metric"><strong>${esc(m.value)}</strong><span>${esc(m.label)}</span></article>`).join('');
+      const categories = ['全部', ...new Set(currentItems().map(i => i.category))];
+      document.getElementById('filters').innerHTML = categories.map(c => `<button class="filter${c===state.category?' active':''}" data-category="${esc(c)}">${esc(c)}</button>`).join('');
+      document.getElementById('deep').innerHTML = `<div class="section-label">${singleDay?'DEEP DIVE':'LATEST DEEP DIVE IN PERIOD'}</div><h2>${esc(report.deepDive.title)}</h2><p>${esc(report.deepDive.text)}</p><a class="source" href="${report.deepDive.source}" target="_blank" rel="noreferrer">查看原始项目 ↗</a>`;
+      document.getElementById('noise').innerHTML = `<div class="section-label">${singleDay?'SIGNAL / NOISE':'LATEST SIGNAL / NOISE IN PERIOD'}</div><h2>可能被高估的热点</h2><p>${esc(report.noise)}</p>`;
+      renderTimeFilters();
+    }
+    function renderCards(){
+      const q = state.query.toLowerCase();
+      const items = currentItems().filter(i => (state.category==='全部'||i.category===state.category) && (!q||[i.title,i.summary,i.why,i.reportDate,...i.meta].join(' ').toLowerCase().includes(q)));
+      const grid = document.getElementById('grid');
+      grid.querySelectorAll('.card').forEach(n => n.remove());
+      document.getElementById('empty').style.display = items.length ? 'none' : 'block';
+      items.forEach(i => {
+        const el = document.createElement('article'); el.className='card';
+        el.innerHTML = `<div class="card-top"><div class="card-kicker"><span class="category">${esc(i.category)}</span>${state.view!=='day'?`<span class="report-date">${esc(i.reportDate)}</span>`:''}</div><span class="level">${esc(i.level)}</span></div><h2>${esc(i.title)}</h2><p class="summary">${esc(i.summary)}</p><p class="why">${esc(i.why)}</p><div class="meta">${i.meta.map(x=>`<span>${esc(x)}</span>`).join('')}</div><div class="card-links"><a class="source" href="${esc(i.source)}" target="_blank" rel="noreferrer">${esc(i.sourceLabel||'SOURCE / GITHUB ↗')}</a>${i.playUrl?`<a class="source" href="${esc(i.playUrl)}" target="_blank" rel="noreferrer">${esc(i.playLabel||'在线体验 ↗')}</a>`:''}</div>`;
+        grid.appendChild(el);
+      });
+    }
+    if(reports.length){renderBase();renderCards();}
+    document.getElementById('filters').addEventListener('click',e=>{if(!e.target.matches('.filter'))return;state.category=e.target.dataset.category;document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b===e.target));renderCards()});
+    document.getElementById('search').addEventListener('input',e=>{state.query=e.target.value.trim();renderCards()});
+    document.getElementById('viewFilters').addEventListener('click',e=>{if(!e.target.matches('.view-btn'))return;state.view=e.target.dataset.view;state.period=periodsFor(state.view)[0]||'';state.category='全部';renderBase();renderCards();window.scrollTo({top:0,behavior:'smooth'})});
+    document.getElementById('periodFilters').addEventListener('click',e=>{if(!e.target.matches('.date-btn'))return;state.period=e.target.dataset.period;state.category='全部';renderBase();renderCards();window.scrollTo({top:0,behavior:'smooth'})});
+  </script>
+</body>
+</html>
