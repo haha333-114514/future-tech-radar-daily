@@ -1,5 +1,128 @@
 window.DAILY_REPORTS = [
   {
+    date: "2026-11-02",
+    label: "NOV 02",
+    pulse: "今天的重点是让本地视觉工具更好用：ComfyUI 修复动态显存下的 FP8 计算，InvokeAI 发布新版画布与量化模型支持；FPGA 仿真和模型工具调用也有具体正确性修复。研究截止北京时间 11 月 2 日 12:10：6 条技术信号，另附 4 个趣味发现。",
+    metrics: [
+      { value: "10", label: "今日条目" },
+      { value: "6", label: "本地可部署" },
+      { value: "0", label: "具身进展" },
+      { value: "1", label: "FPGA / EDA" }
+    ],
+    items: [
+      {
+        category: "图像生成 / FP8 推理加速",
+        level: "NOV 02 MAIN · 北京时间",
+        title: "ComfyUI 修复动态显存模式下 FP8 意外退回 BF16",
+        summary: "12:02 合入修复：动态显存开启时，FP8 路径改用实际转换后的权重类型判断，避免部分 BF16 检查点设置为 fp8_e4m3fn_fast 后仍走 BF16 计算。",
+        why: "适合使用动态显存和 FLUX 工作流的本地用户。作者在 RTX 5070 Ti 16GB、FLUX.1 dev、1024²、20 步的单组测试中，开启动态显存由 1.08 提升到 1.73–1.83 迭代/秒；关闭动态显存的对照组约 1.73–1.77，修复前后基本不变。结果不能外推到所有显卡或模型；需支持所选 FP8 路径，权重许可另核。ComfyUI GPL-3.0，主干提交，本机未运行。与昨日 ProRes 导出是不同改动。",
+        meta: ["RTX 5070 Ti 16GB · 单组测试", "动态显存 / fp8_e4m3fn_fast", "主干修复 · 非通用加速"],
+        source: "https://github.com/Comfy-Org/ComfyUI/pull/16941"
+      },
+      {
+        category: "图像生成 / 量化与超分",
+        level: "NOV 02 RELEASE · alpha 预览版",
+        title: "InvokeAI 7 alpha 4 把 4 位模型、区域布局和纯超分带进预览版",
+        summary: "08:44 发布的 7.0.0 alpha 4 集成 Krea-2 的部分 ComfyUI INT4 ConvRot 格式、FLUX.3 画布区域布局，并加入只运行超分模型、不做去噪的模式。",
+        why: "适合愿意测试预览版、本地生图与修图的人；这是昨日 INT8 传输优化、10 月 31 日 FLUX.3 接入之后的版本化进展。作者在 RX 9060 XT 16GB 的特定 1024² / 8 步案例中，INT4 模型约 34.7–34.9 秒/图，部分常驻 INT8 为 42.1–48.1 秒；收益主要来自模型更容易完整装入显存，INT4 每步仍需解包，不代表计算更快。6.4 GiB 是所测 transformer 常驻量，不是整套工作流最低显存。FLUX.3 区域是图层绘制内容的外接矩形，非精确蒙版。代码 Apache-2.0，模型权重许可各自核对；未在本机复现。",
+        meta: ["7.0.0 alpha 4 · 预览版", "INT4 常驻量不等于总显存", "纯超分模式 · 许可按模型核对"],
+        source: "https://github.com/invoke-ai/InvokeAI/releases/tag/v7.0.0-alpha.4",
+        playUrl: "https://github.com/invoke-ai/InvokeAI/pull/9817",
+        playLabel: "INT4 格式与作者测试 ↗"
+      },
+      {
+        category: "图像工作流 / 矢量画布",
+        level: "NOV 02 RELEASE · 稳定版",
+        title: "InvokeAI 6.14.3 增加可编辑矢量图层",
+        summary: "07:58 发布的 6.14.3 为画布增加可编辑形状和曲线图层，可按需要栅格化后用于图生图；同时修复服务中断后部分下载无法重新开始的问题。",
+        why: "适合想先摆形状、再将结果送进本地生成工作流的用户。该稳定版与 7 alpha 是不同版本线，不应假设两者功能完全相同；生成所需显卡、内存和许可取决于所用模型。代码 Apache-2.0，本机未安装或验证下载恢复；更新前先保存画布与配置。",
+        meta: ["6.14.3 稳定版", "矢量图层 → 栅格化 → 图生图", "下载重启修复 · 未本机测试"],
+        source: "https://github.com/invoke-ai/InvokeAI/releases/tag/v6.14.3"
+      },
+      {
+        category: "FPGA / SystemVerilog 仿真",
+        level: "NOV 01 MAIN · 非今日发布",
+        title: "Verilator 修复总线上拉与逐位上拉混用的求值",
+        summary: "11 月 1 日 21:36 合入：此前 tri1 总线叠加逐位 pullup 时，没有单独上拉的位可能错误变成 0；示例中的 7 位总线应为 7'h7f，却得到 7'h08。",
+        why: "适合验证三态总线、上拉或开漏接口的 RTL 开发者；变更从总线默认上拉/下拉值出发，再应用逐位设置，并增加回归用例。Verilator 可在本地用 CPU 构建，LGPL-3.0 / Artistic-2.0；建议对正反方向的索引和驱动/高阻状态做回归对照。这是仿真正确性，昨天报道的是循环展开编译性能；没有器件、综合资源或板级时序数据。",
+        meta: ["1 日合入 · 非今日发布", "tri1 / pullup · 仿真正确性", "无 FPGA 板级结果"],
+        source: "https://github.com/verilator/verilator/pull/8939"
+      },
+      {
+        category: "LLM 推理服务 / 工具调用",
+        level: "NOV 02 MAIN · 北京时间",
+        title: "vLLM 修复 FunctionGemma 工具参数丢失和流式 JSON",
+        summary: "11:27 合入：FunctionGemma 解析器现在处理数字、布尔值、数组和嵌套对象，并修复多参数流式响应及无参数调用的 JSON 拼接。",
+        why: "适合自托管小模型、实验工具调用的开发者。作者报告 CPU 解析器 42 项及 H200 服务端 7 项测试通过；服务测试固定了部分输出，检验的是解析与服务行为，不是模型自主选工具的可靠率。作者仍记录大 stream_interval 下可能丢函数名的边界问题；权限、隔离、超时与失败恢复仍需另测。vLLM Apache-2.0，模型许可另查。本次针对 FunctionGemma，与昨日 HYV4 参数名修复不同。",
+        meta: ["FunctionGemma · 数字 / 布尔 / 数组", "作者：CPU 42 项、H200 7 项通过", "极大分块间隔仍有边界限制"],
+        source: "https://github.com/vllm-project/vllm/pull/63992"
+      },
+      {
+        category: "本地 LLM 推理 / AMD ROCm",
+        level: "NOV 02 MAIN · 北京时间",
+        title: "vLLM 修复 RDNA 量化矩阵乘法的大尺寸地址溢出",
+        summary: "12:06 合入针对 gfx11 / gfx12 的 W4A16 内核修复：大矩阵的行偏移改用 64 位，避免超过 32 位范围时触发显存访问错误或产生 NaN。",
+        why: "适合在兼容 AMD 显卡与 ROCm 环境上部署量化模型的用户。作者在 Radeon R9700 / gfx1201 的两组大尺寸测试中复现错误并验证修复；现有 CI 没有覆盖 gfx11 / gfx12 的测试池，通用显存门槛与运行速度没有给出。该提交修的是特定大矩阵正确性，不代表所有 ROCm 模型都会更快；主干代码，本机未运行。",
+        meta: ["RDNA gfx11 / gfx12 · W4A16", "作者 R9700 实测 · CI 覆盖缺口", "大矩阵地址正确性修复"],
+        source: "https://github.com/vllm-project/vllm/pull/64614"
+      },
+      {
+        category: "浏览器游戏 / 编程解谜",
+        level: "趣味发现 · 非今日发布",
+        title: "Untrusted：改关卡里的 JavaScript 帮角色逃出去",
+        summary: "建议 15–25 分钟：屏幕一边是地图，一边是可编辑代码；试着改一小段脚本，给角色打开一条路。喜欢逐步发现规则的人可以先不看攻略。",
+        why: "官方网页可打开，建议电脑键盘和鼠标；需要浏览器 JavaScript，手机操作、账号及离线体验未实测。作者公开源码和音乐，非商业使用按 CC BY-NC-SA 3.0，商业用途需另行授权，因此不能当作无限制开源许可。网页有自愿捐款入口；未实际试玩，进度请留意备份。",
+        meta: ["15–25 分钟 · 代码闯关", "源码可见 · 非商业许可", "页面可访问 · 未实际试玩"],
+        source: "https://github.com/AlexNisnevich/untrusted",
+        sourceLabel: "作者源码 / 许可说明 ↗",
+        playUrl: "https://untrustedgame.com/",
+        playLabel: "官方网页入口 ↗"
+      },
+      {
+        category: "本地游戏 / 编程增量",
+        level: "趣味发现 · 非今日发布",
+        title: "Bitburner：写脚本自动推进赛博朋克世界",
+        summary: "建议先玩 20–30 分钟：从游戏里的终端和少量命令开始，逐渐用 JavaScript 脚本自动完成任务；不熟悉编程也可以先试基础玩法。",
+        why: "官方提供浏览器版和 Steam 版，Steam 页面标注免费；Steam 安装需要其平台账号。适合桌面键盘，网页首次加载需联网，离线、手机与网页账号要求未实测。源码许可证为 Apache-2.0 加 Commons Clause，包含销售限制，不能简写成普通 Apache 开源许可；未安装或试玩，注意导出备份存档。",
+        meta: ["20–30 分钟起 · JavaScript / 终端", "Steam 免费 · 需平台账号安装", "源码含 Commons Clause 限制"],
+        source: "https://github.com/bitburner-official/bitburner-src",
+        sourceLabel: "官方源码 / 完整许可 ↗",
+        playUrl: "https://bitburner-official.github.io/",
+        playLabel: "官方浏览器版 ↗"
+      },
+      {
+        category: "浏览器游戏 / 六边形消除",
+        level: "趣味发现 · 非今日发布",
+        title: "Hextris：转动六边形，把同色方块接在一起",
+        summary: "建议 5–10 分钟：转动中央六边形，让落下的同色方块相邻消除；节奏会越来越快，适合短暂休息时挑战一下。",
+        why: "作者提供浏览器版和 GPL-3.0-or-later 源码。官方两个网页入口在本次检索中均返回 502，因此目前不能确认你的网络能否打开；键盘/触屏兼容、费用、账号和离线体验未实测，也未实际试玩。浏览器本地记录可能因清缓存丢失。",
+        meta: ["5–10 分钟 · 旋转消除", "GPL-3.0-or-later 源码", "官方页面本次返回 502"],
+        source: "https://github.com/Hextris/hextris",
+        sourceLabel: "官方源码 / GPL-3.0-or-later ↗",
+        playUrl: "https://hextris.github.io/hextris/",
+        playLabel: "官方网页入口（本次返回 502） ↗"
+      },
+      {
+        category: "互动网站 / 荒诞选择",
+        level: "趣味发现 · 非今日发布",
+        title: "Absurd Trolley Problems：把经典选择题越拧越离谱",
+        summary: "建议 5–10 分钟：每关看一辆小电车要往哪条轨道走，然后作出选择；题目会不断增加奇怪的条件，轻松体验就好。",
+        why: "Neal.fun 官方网页可访问，界面以点击选择为主；源码和授权未确认，不能视作开源。网页首次打开需要联网；账号、费用、手机触控及离线能力未独立核实。本次只检查到页面，没有实际操作；内容涉及卡通式伤亡情境。",
+        meta: ["5–10 分钟 · 点击选择", "网页互动 · 源码未确认", "卡通式伤亡情境 · 未试玩"],
+        source: "https://neal.fun/absurd-trolley-problems/",
+        sourceLabel: "官方互动页面 ↗",
+        playUrl: "https://neal.fun/absurd-trolley-problems/",
+        playLabel: "打开互动页面 ↗"
+      }
+    ],
+    deepDive: {
+      title: "FP8 选项开了，为什么实际可能仍在用 BF16？",
+      text: "动态显存模式会让部分权重先留在 CPU，真正送到 GPU 时才按目标精度转换。ComfyUI 此前检查的是仍在内存里的原始 BF16 权重类型，因此即使工作流选择 fp8_e4m3fn_fast，也可能错过 FP8 矩阵乘法并回退到 BF16。新提交在选择路径时读取目标转换类型；关闭动态显存时保持原有判断。作者用 RTX 5070 Ti 16GB、FLUX.1 dev、1024² / 20 步测得动态显存从 1.08 到 1.73–1.83 迭代/秒；这是特定工作流、驱动与硬件下的作者结果，不是通用承诺。用户可固定模型、种子、分辨率和步数，对比升级前后的迭代速度、峰值显存与图像效果，并留意对应 FP8 硬件和模型许可。主干修复不意味着所有现有安装包都已更新，本机未复现。",
+      source: "https://github.com/Comfy-Org/ComfyUI/pull/16941"
+    },
+    noise: "判断而非事实：看到‘4 位’或一次大幅提速，很容易期待任何电脑都能更快生图。但量化可能主要节省的是权重常驻显存；是否提速还取决于解包开销、PCIe 传输、显卡内核和整体工作流。"
+  },
+  {
     date: "2026-11-01",
     label: "NOV 01",
     pulse: "今天的信号集中在把现有工具磨得更实用：本地生图的显存换算和大画布处理更省开销，视频导出更灵活，RTL 仿真和移动端量化也有具体改动。研究截止北京时间 11 月 1 日 21:40：7 条技术信号，另附 4 个可选趣味发现；本地运行不代表普通电脑都能开箱即用。",
