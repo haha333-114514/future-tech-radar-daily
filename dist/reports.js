@@ -2,14 +2,32 @@ window.DAILY_REPORTS = [
   {
     date: "2026-11-03",
     label: "NOV 03",
-    pulse: "今天值得关注的是更可靠地把模型和硬件工具跑起来：大图 VAE 显存预留获得修正，Lattice FPGA 的乘加推断更完整，机器人旧检查点也有兼容选项。研究截止北京时间 11 月 3 日 14:31：8 条技术信号，另附 4 项趣味发现；本地可部署数只统计 7 项有本地运行路径的技术工具，不含暂无法完整复现的机器人实验。",
+    pulse: "今天值得关注的是更可靠地把模型和硬件工具跑起来：大图 VAE 显存预留、VHDL 解析与机器人模型兼容性都有修复，Lattice FPGA 的乘加推断也更完整。研究截止北京时间 11 月 3 日 18:05：10 条技术信号，另附 6 项趣味发现；本地可部署数只统计 8 项有本地运行路径的技术工具，两项机器人兼容性实验均未计入。",
     metrics: [
-      { value: "12", label: "今日条目" },
-      { value: "7", label: "本地可部署" },
-      { value: "1", label: "具身进展" },
-      { value: "2", label: "FPGA / EDA" }
+      { value: "16", label: "今日条目" },
+      { value: "8", label: "本地可部署" },
+      { value: "2", label: "具身进展" },
+      { value: "3", label: "FPGA / EDA" }
     ],
     items: [
+      {
+        category: "VHDL / GHDL 语法解析",
+        level: "NOV 03 UPDATE · 14:37 北京时间",
+        title: "GHDL 改善 VHDL 语法树解析与格式化输出",
+        summary: "14:37 合入的 pyGHDL DOM 修复补全受约束数组维度、枚举字符字面量、条件运算符和聚合赋值目标等解析或输出，并处理 PSL 默认时钟导致的异常。",
+        why: "适合用 VHDL 做源码分析、工具集成或查看设计结构的开发者。作者报告 pyunit 测试为 238 通过、16 项预期失败，并解析多份 OSVVM 源码；这是作者测试，未在本机复现，也不是 FPGA 面积或时序数据。主干新增 pretty 的 --std 08 / 19 选择，不表示完整支持 VHDL-2019；需要匹配 pyVHDLModel 约 0.41.0，部分计时属性更名且类型变化，使用现有脚本前应检查兼容性。",
+        meta: ["pyGHDL DOM · VHDL / PSL", "作者测试 238 通过 / 16 预期失败", "主干更新 · 注意 API 变化"],
+        source: "https://github.com/ghdl/ghdl/pull/3443"
+      },
+      {
+        category: "具身智能 / VLA 推理兼容",
+        level: "NOV 03 UPDATE · 17:30 北京时间",
+        title: "LeRobot 修复旧 VLA 检查点在新版 Transformers 下的兼容问题",
+        summary: "17:30 合入：适配 Transformers 5.22 的视觉编码器参数路径与缓存接口，处理部分旧模型可能静默漏载视觉权重、SmolVLA 推理报错等问题。",
+        why: "适合复核或迁移 Pi0、Pi0.5、Pi0-fast、SmolVLA 等策略的研究者。作者报告在 A100 上运行 12 项 OpenPI 对照测试通过，并检查 5 个 Hub 检查点的视觉权重；另有 2 项 PI0Fast 对照测试在主干中也失败。此次没有新增实体机器人闭环测试、传感器配置或硬件成本，不能当成实机成功率提升；代码 Apache-2.0，具体模型权重、许可和算力门槛需按检查点核实。与早些时候报道的 VLA-JEPA RoPE 兼容开关是不同问题，本机未复现。",
+        meta: ["Transformers 5.22 · 视觉权重 / 缓存", "作者测试 A100 · 非实体测试", "权重与许可按模型核实"],
+        source: "https://github.com/huggingface/lerobot/pull/5220"
+      },
       {
         category: "图像超分 / VAE 显存管理",
         level: "NOV 03 MAIN · 北京时间",
@@ -83,6 +101,30 @@ window.DAILY_REPORTS = [
         why: "适合愿意自行构建并测试手机或电脑 GPU 推理的用户。需要兼容 OpenCL 驱动和对应量化模型，llama.cpp 代码 MIT、模型许可另查；初步支持并不保证所有设备可用，原始提交也没有给出通用显存、精度和速度数据。先用固定输入比较输出质量，再测耗时与内存；主干代码未在本机验证。",
         meta: ["IQ4_XS · OpenCL", "参考 Adreno 路径", "驱动 / 精度 / 速度须实测"],
         source: "https://github.com/ggml-org/llama.cpp/pull/31339"
+      },
+      {
+        category: "浏览器游戏 / 电梯调度",
+        level: "趣味发现 · 非今日发布",
+        title: "Elevator Saga：自己写程序指挥电梯接客",
+        summary: "建议 15–25 分钟：调整 JavaScript 电梯调度逻辑，看看怎样更快接送乘客并通过逐渐变难的关卡。",
+        why: "作者提供浏览器游戏和 MIT 源码，适合电脑键盘与鼠标；需要一点 JavaScript 基础。网页首次打开需联网，代码保存在浏览器本地，清除数据前建议自行复制备份。费用、账号、手机操作和离线体验未核实；项目目前不再积极维护，官方页面可访问但本次未实际试玩。",
+        meta: ["15–25 分钟 · JavaScript 调度", "源码 MIT · 电脑键鼠", "本地保存代码 · 未试玩"],
+        source: "https://github.com/magwo/elevatorsaga",
+        sourceLabel: "作者源码 / MIT ↗",
+        playUrl: "https://play.elevatorsaga.com/",
+        playLabel: "打开官方游戏 ↗"
+      },
+      {
+        category: "浏览器游戏 / 3D 方块解谜",
+        level: "趣味发现 · 非今日发布",
+        title: "FRAC：在三维井里旋转方块、填满整层",
+        summary: "建议 8–15 分钟：移动和翻转立体方块，转动视角观察井底，填满一整层后消除；还可以切换练习模式。",
+        why: "作者说明支持电脑键盘及手机、平板触控，需要 WebGL 2；无需账号，公开网页未见付费门槛。源码 GPL-3.0-only，在线游戏首次需要联网，离线安装尚未提供。进度保存在浏览器本地，可导出备份，不同网址的存档不互通；官方入口仅确认可访问，本次未实际试玩。",
+        meta: ["8–15 分钟 · 三维旋转消层", "GPL-3.0-only · 键盘 / 触控", "需 WebGL 2 · 未试玩"],
+        source: "https://github.com/kariato/frac",
+        sourceLabel: "作者源码 / GPL-3.0-only ↗",
+        playUrl: "https://kariato.github.io/frac/",
+        playLabel: "打开官方游戏 ↗"
       },
       {
         category: "浏览器游戏 / 网络连线解谜",
