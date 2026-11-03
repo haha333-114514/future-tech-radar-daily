@@ -1,5 +1,146 @@
 window.DAILY_REPORTS = [
   {
+    date: "2026-11-03",
+    label: "NOV 03",
+    pulse: "今天值得关注的是更可靠地把模型和硬件工具跑起来：大图 VAE 显存预留获得修正，Lattice FPGA 的乘加推断更完整，机器人旧检查点也有兼容选项。研究截止北京时间 11 月 3 日 14:31：8 条技术信号，另附 4 项趣味发现；本地可部署数只统计 7 项有本地运行路径的技术工具，不含暂无法完整复现的机器人实验。",
+    metrics: [
+      { value: "12", label: "今日条目" },
+      { value: "7", label: "本地可部署" },
+      { value: "1", label: "具身进展" },
+      { value: "2", label: "FPGA / EDA" }
+    ],
+    items: [
+      {
+        category: "图像超分 / VAE 显存管理",
+        level: "NOV 03 MAIN · 北京时间",
+        title: "InvokeAI 修正大图分块 VAE 的工作显存估算",
+        summary: "07:33 合入：分块编码和解码不再只按单个图块估价，也考虑拼接整张图需要的额外内存，以减少大图时预留不足或小图时预留过多。",
+        why: "适合本地大图修复、超分和分块 VAE 用户。作者在 RTX 4090 默认分配器、SDXL FP32 解码、512 像素分块、8192 像素图像的单例中，测得该操作需求 4.94 GiB；旧预留约为需求的 0.48 倍，新预留约 1.34 倍。这不是完整生成流程的总显存或通用最低配置。测量覆盖至 12288 像素，其他平台和更大尺寸存在外推限制；早期未发布估算器的用户校准需重做。代码 Apache-2.0，模型许可另查；与昨日纯超分模式及前日画布截图优化不同，本机未复现。",
+        meta: ["SDXL / FLUX 分块 VAE", "4090 单例：实测需求 4.94 GiB", "工作内存估算 ≠ 整机最低显存"],
+        source: "https://github.com/invoke-ai/InvokeAI/pull/9946"
+      },
+      {
+        category: "图像生成 / LoRA 兼容",
+        level: "NOV 03 MAIN · 北京时间",
+        title: "InvokeAI 修复部分 Qwen-Image LoRA 的识别与映射",
+        summary: "14:29 合入：识别带 ComfyUI diffusion_model. 或原生 PEFT base_model.model. 前缀的部分 Qwen-Image LoRA，并在加载时剥离前缀。",
+        why: "适合在本地使用 Qwen-Image 编辑或风格 LoRA 的用户。作者在 Windows 11 / CPU 的文件头和元设备检查中，一组样本从 840/840 层无法映射变为 0/840；这不是实际生图质量评测，作者未使用 GPU 生图。纯 attention 的适配器以及 LoKr、LoHa、DoRA 等仍有不支持情况；已被记为 Unknown 的文件需在模型管理器重新识别。代码 Apache-2.0、权重许可另核；这是基础 Qwen-Image，不是 10 月 31 日报道的 Qwen-Image-2.1 LoRA。",
+        meta: ["ComfyUI / PEFT 前缀", "作者仅做 CPU 识别与映射测试", "部分适配器仍不支持"],
+        source: "https://github.com/invoke-ai/InvokeAI/pull/10061"
+      },
+      {
+        category: "FPGA / Lattice DSP 综合",
+        level: "NOV 03 MAIN · 北京时间",
+        title: "Yosys 为 Lattice Nexus 增强乘加与四路点积推断",
+        summary: "01:25 合入：Nexus 的 c + a×b 模式可推断到 MULTADDSUB36X36，四路 9×9 点积加外部加数可推断到 MULTADDSUB9X9WIDE；同时修复部分信号扇出和单元配置问题。",
+        why: "适合在 Lattice Nexus / LIFCL 器件上做滤波、矩阵运算和 FPGA 加速的开发者。提交测试使用 synth_nexus -family lifcl；示例网表分别检查 1 个对应宏单元，并不等于完整设计的物理 DSP 数量、面积或最终频率。实际映射取决于位宽、有符号性、运算结构及工具链版本，PR 没有板上时序结果；建议综合前后对照单元统计并做等价性与布线时序验证。本次是主干修改，不保证已有安装包包含。",
+        meta: ["Lattice Nexus / LIFCL · sysDSP", "36×36 乘加 / 四路 9×9", "示例宏单元数 ≠ 板级资源"],
+        source: "https://github.com/YosysHQ/yosys/pull/6245"
+      },
+      {
+        category: "FPGA / SystemVerilog 仿真性能",
+        level: "NOV 03 MAIN · 北京时间",
+        title: "Verilator 可按模块实例分组多线程仿真任务",
+        summary: "03:45 合入 threads_group 指令，可让多核或阵列设计中标记模块的各实例尽量集中调度，改善多线程访问相同实例状态时的缓存局部性。",
+        why: "适合运行大型多核 SystemVerilog 仿真的开发者。作者在 Xeon Gold 6254、4 线程、RTLMeter 特定测试中，BlackParrot 4×4 获 1.78–1.87 倍、HammerBlade 16×8 获 1.57 倍；单个分组占设计大部分时作者在一台 Mac 上反而测得 0.60 倍。需要 --threads 大于 1、手动选择分组，标记模块不内联；这是软件仿真速度，不是 FPGA 时钟。与昨日三态总线正确性修复不同。",
+        meta: ["threads_group · 多线程仿真", "4 线程特定案例最高 1.87×", "分组过大可能变慢"],
+        source: "https://github.com/verilator/verilator/pull/8804"
+      },
+      {
+        category: "具身智能 / VLA 世界模型兼容",
+        level: "NOV 02 MAIN · 非今日发布",
+        title: "LeRobot 给旧 VLA-JEPA 检查点加入 RoPE 兼容开关",
+        summary: "11 月 2 日 20:31 合入：旧检查点若在早期旋转位置编码实现下训练，可选择 world_model_rope_legacy 保持旧预测方式；新开关默认关闭。",
+        why: "适合继续训练或复核旧 VLA-JEPA 世界模型的研究者。作者在 Jetson Orin NX 上用一个 SO-101 旧微调检查点及其数据的 25 段、200 个窗口离线比较，世界模型 L1 旧方式 1.175、新方式 1.731；这不是实体机器人闭环抓取成功率。数据页标注 SO-101、双摄 640×480 / 30fps，数据 Apache-2.0；LeRobot 代码 Apache-2.0，但引用的检查点本次无法访问、许可未核实，评测脚本尚未公开，硬件成本未给出，当前不能完整复现。与 11 月 1 日 EMA 训练更新不同。",
+        meta: ["2 日合入 · 非今日发布", "SO-101 双摄记录 · Jetson 离线评估", "检查点不可核实 · 评测脚本未公开"],
+        source: "https://github.com/huggingface/lerobot/pull/5098",
+        playUrl: "https://huggingface.co/datasets/ravediamond/so101_bowls_all_trimmed",
+        playLabel: "官方数据集 / Apache-2.0 ↗"
+      },
+      {
+        category: "端侧推理 / Apple WebGPU 内存",
+        level: "NOV 03 MAIN · 北京时间",
+        title: "LiteRT 扩展 Apple WebGPU 的内存映射零复制路径",
+        summary: "05:41 合入：在满足缓冲区与内存映射条件时，Apple WebGPU 后端除了已有整数格式，也允许 FP16 / FP32 数据走无需额外复制的导入路径。",
+        why: "适合研究 Apple 设备端侧模型加载和 GPU 部署的开发者。该优化有后端、数据类型与内存映射条件，不能推断所有浏览器或模型都受益；原始提交没有给出通用内存节省和耗时数字。LiteRT 代码 Apache-2.0，模型权重许可、系统版本和硬件要求需按实际项目核对；主干提交，未本机测试。",
+        meta: ["Apple WebGPU · mmap", "FP16 / FP32 条件路径", "未提供通用性能数字"],
+        source: "https://github.com/google-ai-edge/LiteRT/pull/11321"
+      },
+      {
+        category: "编码 Agent / 进程管理",
+        level: "NOV 03 MAIN · 北京时间",
+        title: "OpenCode 守护进程增加 Unix 管道进程模式",
+        summary: "02:27 合入：进程守护组件可以在 Unix 下通过管道运行非交互命令，保留输出重放与订阅，为后续服务重启交接期间保活 shell 命令打基础。",
+        why: "适合关注编码 Agent 长任务、日志和失败恢复的人。作者报告 Linux / macOS 的进程与信号测试，包括重启交接、输出重放和子进程终止；当前只是守护组件能力，不应当作所有 shell 命令已自动持久运行的承诺。Windows 支持仍待后续；管道模式 stdin 关闭，也不是终端交互或安全隔离机制。主干提交，未在本机运行。",
+        meta: ["Unix 管道 · 非交互命令", "输出重放 / 进程组终止", "Windows 支持待后续"],
+        source: "https://github.com/anomalyco/opencode/pull/60697"
+      },
+      {
+        category: "本地 LLM 推理 / OpenCL 量化",
+        level: "NOV 03 MAIN · 北京时间",
+        title: "llama.cpp 的 OpenCL 后端初步支持 IQ4_XS",
+        summary: "13:58 合入 IQ4_XS 量化格式的初步 OpenCL 支持，作者参考了 Adreno 的优化路径；这是 11 月 1 日 IQ3_S / IQ3_XXS 支持之后的另一种格式。",
+        why: "适合愿意自行构建并测试手机或电脑 GPU 推理的用户。需要兼容 OpenCL 驱动和对应量化模型，llama.cpp 代码 MIT、模型许可另查；初步支持并不保证所有设备可用，原始提交也没有给出通用显存、精度和速度数据。先用固定输入比较输出质量，再测耗时与内存；主干代码未在本机验证。",
+        meta: ["IQ4_XS · OpenCL", "参考 Adreno 路径", "驱动 / 精度 / 速度须实测"],
+        source: "https://github.com/ggml-org/llama.cpp/pull/31339"
+      },
+      {
+        category: "浏览器游戏 / 网络连线解谜",
+        level: "趣味发现 · 非今日发布",
+        title: "Net：旋转线路，把所有节点连成一张网",
+        summary: "建议 5–15 分钟：转动每一格线路，让电脑和中心连通；没有速度压力，可以慢慢排除接错的岔路。",
+        why: "Simon Tatham 的官方单机谜题合集提供网页与 Windows 原生版本，合集代码 MIT。网页需 JavaScript / WebAssembly，适合电脑鼠标操作；官方页面提供存档文件下载与恢复，浏览器清缓存前可先备份。费用、账号、手机操作和网页离线未独立实测，本次没有试玩或安装。",
+        meta: ["5–15 分钟 · 线路旋转", "MIT · 官方 Windows 版可下载", "支持导出存档 · 未试玩"],
+        source: "https://www.chiark.greenend.org.uk/~sgtatham/puzzles/",
+        sourceLabel: "官方合集 / 源码与许可 ↗",
+        playUrl: "https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/net.html",
+        playLabel: "打开官方网页 ↗"
+      },
+      {
+        category: "创意编程 / 像素小游戏",
+        level: "趣味发现 · 非今日发布",
+        title: "Playload Arcade：点开一串不到 3 KB 的小游戏",
+        summary: "建议 10–20 分钟：先从街机列表挑个赛车、迷宫或推箱子作品玩，再打开编辑器看看小小的代码如何变成游戏。",
+        why: "官方页面提供方向键 / WASD、Z / X 和屏幕按钮；压缩 JavaScript 上限 3 KB，作品代码编码在 URL 里，可以保存链接。引擎源码 MIT，社区作品和第三方素材各自的许可需另查；网页首次加载需联网，账号和离线体验未核实。入口可访问，但未实际试玩。",
+        meta: ["10–20 分钟 · 街机 / 编辑器", "引擎 MIT · 作品许可另查", "键盘 / 屏幕按钮 · 备份 URL"],
+        source: "https://github.com/kitao/playload",
+        sourceLabel: "官方引擎源码 / MIT ↗",
+        playUrl: "https://kitao.dev/playload/arcade/",
+        playLabel: "打开官方街机列表 ↗"
+      },
+      {
+        category: "浏览器游戏 / 三维迷宫",
+        level: "趣味发现 · 非今日发布",
+        title: "Astray：把一颗小球滚出三维迷宫",
+        summary: "建议 5–10 分钟：用方向键或 H / J / K / L 控制小球，找到迷宫出口；想多玩一会儿就继续试下一关。",
+        why: "作者提供 WebGL 网页和公开源码，仓库采用 Unlicense；适合电脑键盘。网页需支持 WebGL，作者给出自行下载源码和本地运行方式，但本次没有安装或测试离线；费用、账号与手机操作也未核实。官方入口页面可访问，未实际试玩。",
+        meta: ["5–10 分钟 · 方向键 / HJKL", "Unlicense · WebGL", "入口可访问 · 未试玩"],
+        source: "https://github.com/wwwtyro/Astray",
+        sourceLabel: "作者源码 / Unlicense ↗",
+        playUrl: "https://wwwtyro.github.io/Astray/",
+        playLabel: "打开官方网页 ↗"
+      },
+      {
+        category: "浏览器游戏 / 迷宫闯关",
+        level: "趣味发现 · 非今日发布",
+        title: "OpenGames：迷宫之外还有贪吃蛇和记忆翻牌",
+        summary: "建议 5–15 分钟：在合集里挑迷宫、贪吃蛇、打地鼠或翻牌；想换口味时随手切到另一款。",
+        why: "作者表示合集免费、无需账号，适用于手机和电脑；代码、原始图形及合成音效采用 MIT。首页可访问，但本次检索工具未能打开迷宫子页，实际可玩性、离线和触屏手感未验证，也没有试玩。浏览器保存的记录可能随清缓存丢失。",
+        meta: ["5–15 分钟 · 六款网页小游戏", "作者说明免费 / 无账号", "MIT · 迷宫子页未核验"],
+        source: "https://github.com/opengames-dev/opengames-dev.github.io",
+        sourceLabel: "作者源码 / MIT ↗",
+        playUrl: "https://opengames-dev.github.io/",
+        playLabel: "打开官方游戏合集 ↗"
+      }
+    ],
+    deepDive: {
+      title: "从 RTL 乘加写法到 Lattice Nexus DSP 宏单元",
+      text: "Yosys 针对 Nexus 的本次主干更新让更多乘加结构被识别成器件专用单元：最多 36×36 的 c+a×b 可映射为 MULTADDSUB36X36，四组 9×9 乘积加外部加数可映射为 MULTADDSUB9X9WIDE。此前相应乘法可能进 DSP、加法却留在通用逻辑；新推断更有机会把操作放在同一宏中。作者测试通过 synth_nexus -family lifcl 检查对应网表中各有一个目标宏，并增加有关扇出和等价性的测试；这个数量是测试网表的单元计数，不代表任何完整设计的最终 DSP、LUT 使用或布局后频率。位宽、符号扩展、运算顺序和中间结果是否被其他逻辑使用都会影响匹配。建议先用小型 RTL 在固定的 Yosys 版本上综合，比较变更前后的统计和等价性，再针对实际芯片做布局布线与时序分析；本次未在板上复现。",
+      source: "https://github.com/YosysHQ/yosys/pull/6245"
+    },
+    noise: "判断而非事实：一个新 DSP 宏推断或单次仿真加速数字，很容易被理解为设计一定更省资源或板上频率一定更高；真实结果还取决于位宽、符号、布线、时序约束和并行划分。"
+  },
+  {
     date: "2026-11-02",
     label: "NOV 02",
     pulse: "今天的重点是让本地视觉工具更好用：ComfyUI 修复动态显存下的 FP8 计算，InvokeAI 发布新版画布与量化模型支持；FPGA 仿真和模型工具调用也有具体正确性修复。研究截止北京时间 11 月 2 日 12:10：6 条技术信号，另附 4 个趣味发现。",
