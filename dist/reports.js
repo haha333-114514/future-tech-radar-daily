@@ -1,5 +1,200 @@
 window.DAILY_REPORTS = [
   {
+    date: "2026-11-04",
+    label: "NOV 04",
+    pulse: "今天最值得关注的是本地工作流的内存与兼容性：SeedVR2 视频超分按显存调整切片，FLUX.3 提示词扩写器接入 InvokeAI，VHDL 工具与机器人策略也有实质更新。研究截止北京时间 11 月 4 日 16:28：10 条技术信号和 6 项趣味发现；本地可部署统计 8 项有本地运行路径的技术工具，两个具身实验保守起见未计入。",
+    metrics: [
+      { value: "16", label: "今日条目" },
+      { value: "8", label: "本地可部署" },
+      { value: "2", label: "具身进展" },
+      { value: "1", label: "FPGA / EDA" }
+    ],
+    items: [
+      {
+        category: "视频超分 / VAE 显存调度",
+        level: "NOV 04 MAIN · 北京时间",
+        title: "ComfyUI 让 SeedVR2 按空闲显存调整视频切片",
+        summary: "13:20 合入：视频 VAE 编解码会依据可用显存选择时间切片长度；条件允许时把部分缓存留在 GPU，否则回退到主机内存。",
+        why: "适合本地修复或超分视频的人。作者在 RTX 5090、FP16、81 帧 1248×720 的单一测试中，SeedVR2 3B 分块超分流程由 38.3 秒降至 23.0 秒，非分块由 22.7 秒降至 17.3 秒；没有给出通用最低显存，其他卡或素材须自行测量。ComfyUI 代码 GPL-3.0，SeedVR2-3B 原始权重标注 Apache-2.0；本次未本机复现。改动晚于当日 09:12 的 v0.44.0 发布，不能视为该版已包含。",
+        meta: ["RTX 5090 · 81 帧单例", "分块流程 38.3 → 23.0 秒", "主干更新 · 非 v0.44.0"],
+        source: "https://github.com/Comfy-Org/ComfyUI/pull/17508",
+        playUrl: "https://huggingface.co/ByteDance-Seed/SeedVR2-3B",
+        playLabel: "官方权重 / 许可 ↗"
+      },
+      {
+        category: "图像生成 / 提示词扩写",
+        level: "NOV 04 MAIN · 北京时间",
+        title: "InvokeAI 可加载 FLUX.3 的图文提示词扩写器",
+        summary: "15:15 合入：此前未能正确识别的 9B 图文扩写器，现在可作为 Text LLM 用于 Expand Prompt 和对应节点；这是基础 FLUX.3 模型接入后的新增能力。",
+        why: "适合想在本地整理生图或图生图提示词的用户。作者在 RTX 4090、扩写器已加载的单模型测试中，BF16 峰值 19.7 GiB、INT8 峰值 12.8 GiB；并非扩写器与生图模型同时运行的总显存。部分文件夹 BF16、单文件 BF16 / INT8 可用，GGUF、w4a8 等暂不支持；旧条目需重新识别，专用自动扩写节点仍待后续。扩写器 Apache-2.0，FLUX.3 主模型许可不同；主干未本机复现。",
+        meta: ["RTX 4090 · 9B 图文扩写器", "INT8 单模型峰值 12.8 GiB", "模型和主工作流许可分开核对"],
+        source: "https://github.com/invoke-ai/InvokeAI/pull/10092",
+        playUrl: "https://huggingface.co/black-forest-labs/flux-3-image-klein-pup",
+        playLabel: "扩写器模型卡 ↗"
+      },
+      {
+        category: "图像生成 / CUDA 推理融合",
+        level: "NOV 04 MAIN · 北京时间",
+        title: "stable-diffusion.cpp 融合 MOSS-Image 的部分 CUDA 运算",
+        summary: "02:01 合入：融合部分 RMSNorm、调制与 RoPE 输出步骤，减少中间转换；这是不同于此前 ComfyUI MOSS 分块处理的推理内核更新。",
+        why: "适合愿意自行构建的本地生图用户。作者在 Windows、RTX 4090 24 GB、CUDA 13.4、Q8_0 与 CPU offload 的 1024² 单一配置中，采样吞吐由 1.54 到 1.59 it/s；不等于完整出图时间，也不能推广到其他硬件。项目代码 MIT，官方 MOSS-Image-SFT 权重 Apache-2.0，量化文件和其他组件许可另查；未本机复现。",
+        meta: ["Windows / RTX 4090 · Q8_0", "采样 1.54 → 1.59 it/s", "主干 · 其他配置须实测"],
+        source: "https://github.com/leejet/stable-diffusion.cpp/pull/2269",
+        playUrl: "https://huggingface.co/OpenMOSS-Team/MOSS-Image-SFT",
+        playLabel: "官方模型卡 ↗"
+      },
+      {
+        category: "FPGA / Lattice 工具链兼容",
+        level: "NOV 04 MAIN · 北京时间",
+        title: "Yosys 输出 Verilog 属性时兼容 Lattice Diamond LSE",
+        summary: "00:17 合入：为部分 32 位非字符串整数属性输出无位宽十进制，例如 syn_keep = 1，解决作者使用 Amaranth → Yosys → Diamond LSE 时的属性格式兼容问题。",
+        why: "适合用开源前端配合 Lattice Diamond LSE 综合的开发者。仅处理值在 0 至 2³¹−1 的已定义属性；作者只报告在 LSE 上测试，没有给出具体芯片、资源、时序或其他工具结果。Diamond 是商业工具链，Yosys 代码 ISC；这是主干互通性修复，不代表 FPGA 更快或更省资源。与昨日 Nexus DSP 推断更新不同。",
+        meta: ["Amaranth → Yosys → Diamond LSE", "32 位整数属性 · 格式兼容", "无器件资源 / 时序数据"],
+        source: "https://github.com/YosysHQ/yosys/pull/6387"
+      },
+      {
+        category: "具身智能 / VLA 机器人策略",
+        level: "NOV 03 MAIN · 非今日发布",
+        title: "LeRobot 接入 G0.5，作者报告双摄机械臂实机执行",
+        summary: "11 月 3 日 20:00 合入：接入基于 Qwen3.5-2B 的 G0.5 策略，支持 flow matching 与 ActionCodec 两种动作头及相机、关节映射。",
+        why: "适合研究机器人策略迁移的人。作者称在 OMX 六关节臂、顶置与腕部相机上微调后，两种动作头均完成任务，但没有试验次数或成功率；1×A100 80 GB、batch 8 所测 39.6 GB 是训练数据，不是推理最低门槛。四个转换检查点在 PR 中标为私有，所用数据访问与许可未能核实；原模型需接受 G0.5 非商业社区许可，代码和权重不能一概视为 Apache。未本机复现。",
+        meta: ["OMX 六关节 · 顶置 / 腕部相机", "作者实机执行 · 成功率未给出", "转换权重私有 · 非商业许可"],
+        source: "https://github.com/huggingface/lerobot/pull/4445",
+        playUrl: "https://huggingface.co/OpenGalaxea/G05",
+        playLabel: "原模型卡 / 使用条款 ↗"
+      },
+      {
+        category: "具身智能 / 世界动作模型",
+        level: "NOV 04 MAIN · 北京时间",
+        title: "FastWAM 增加相对动作和 CPU 文本编码选项",
+        summary: "00:46 合入：LeRobot 的 FastWAM 可选择相对动作、逐样本损失，并可将冻结的文本编码器放在 CPU、按 episode 缓存提示词；三项默认关闭。",
+        why: "适合尝试世界动作模型训练和部署的研究者。作者报告 23 项策略测试通过；公开 fastwam_base 模型卡标注 Apache-2.0、6B BF16，示例使用两路 RGB、8 维状态与 7 维动作，但卡面尚无评测结果。这次没有新的实体或仿真成功率、指定机器人平台或最低显存，约 11 GB 是文本编码器体量而非系统总内存；数据和硬件成本需另行选择与核实。",
+        meta: ["6B BF16 · 两路 RGB 示例", "23 项策略测试 · 非实机评测", "约 11 GB 为编码器体量"],
+        source: "https://github.com/huggingface/lerobot/pull/4657",
+        playUrl: "https://huggingface.co/lerobot/fastwam_base",
+        playLabel: "公开模型卡 / Apache-2.0 ↗"
+      },
+      {
+        category: "本地 LLM 推理 / Adreno 量化",
+        level: "NOV 04 MAIN · 北京时间",
+        title: "llama.cpp 优化 Adreno 的 Q2_0 解码矩阵运算",
+        summary: "16:07 合入：OpenCL 的 Q2_0 矩阵向量内核让每个线程计算更多行，改进特定 Adreno 路径；这是 10 月 30 日初步支持 Q2_0 之后的性能更新。",
+        why: "适合愿意自己构建、测试端侧 GPU 推理的用户。作者在 X2-90、Qwen 3.5 2B Q2_0 单组测试中，512 token 解码由 68.19 到 102.39 token/s；4096 token 提示处理约 1077 到 1073 token/s，没有同步变快。510.87 MiB 是该模型文件大小，不是运行内存；需兼容 OpenCL 驱动、模型和构建选项，低比特质量及其他设备速度须自行比较。代码 MIT，模型许可另查。",
+        meta: ["X2-90 / OpenCL · Q2_0", "单例解码 68.19 → 102.39 token/s", "文件体积 ≠ 运行内存"],
+        source: "https://github.com/ggml-org/llama.cpp/pull/31577"
+      },
+      {
+        category: "本地语音 / 桌面听写",
+        level: "NOV 04 MAIN · 北京时间",
+        title: "Hex 让 Windows 托盘空闲时释放 GPU 设备",
+        summary: "15:49 合入：本地语音听写工具在窗口隐藏时按需释放 GPU，按快捷键时提前准备显示；该项目也出现在 GitHub 今日趋势榜。",
+        why: "适合在 Windows、macOS 或 Linux 使用本地听写的人；官方提供安装包，首次使用需下载语音模型，项目代码 MIT，模型许可另核。作者在 RTX 5070 Ti 的 Windows 托盘空闲测试中，报告显存约 219 → 0 MB，属于无窗口、无模型的特定场景，机器同时有其他负载，不能当成模型推理显存；本次改动在开发主干，未确认稳定版包含，也未本机安装。",
+        meta: ["Windows / macOS / Linux", "作者空闲测试：219 → 0 MB 显存", "首次下载模型 · 主干修改"],
+        source: "https://github.com/anomalyco/hex/pull/1229",
+        playUrl: "https://github.com/anomalyco/hex",
+        playLabel: "官方下载与源码 ↗"
+      },
+      {
+        category: "编码 Agent / 后台任务恢复",
+        level: "NOV 04 MAIN · 北京时间",
+        title: "OpenCode run 等待后台任务，并收尾私有服务",
+        summary: "14:05 与 15:20 的两项主干修复让非交互 run 在适当情况下等待会话树内后台任务，也避免无现成服务时退出后遗留新启动的后台服务。",
+        why: "适合用编码 Agent 跑测试、训练或 CI 的人：此前首条回复结束后可能来不及看到后台结果；这与昨日守护进程管道模式是不同改动。作者和评审报告了测试与后台子任务复现；没有通用自动超时，永不结束的后台命令可能令 run 一直等待，连接已有服务时终止 run 也未必停止服务上的任务。权限隔离和回滚并未由这两项改动解决；未本机验证。",
+        meta: ["非交互 run · 后台任务", "无通用等待超时", "已有服务与私有服务行为不同"],
+        source: "https://github.com/anomalyco/opencode/pull/60699",
+        playUrl: "https://github.com/anomalyco/opencode/pull/61564",
+        playLabel: "私有服务退出修复 ↗"
+      },
+      {
+        category: "数据库内核 / Linux 内存回收",
+        level: "NOV 04 MAIN · 北京时间",
+        title: "DuckDB 调整 jemalloc，规避受影响 Linux 内核的数据归零风险",
+        summary: "02:36 合入：针对部分 x86-64 Linux 内核中透明大页与 MADV_FREE 的问题，将 DuckDB 内置 jemalloc 的 muzzy_decay_ms 默认值改为 0。",
+        why: "适合在 Linux 容器或数据分析环境使用 DuckDB 的人。作者报告特定内核与内存回收条件下中间数据可能静默读为零，并在 Debian 13、RHEL 10 上复现；是否受影响应查发行版内核修复状态，不能认为所有 Linux 或 Windows 环境都中招。作者给出 DUCKDB_JE_MALLOC_CONF=muzzy_decay_ms:0 作为现有版本的配置方式；主干合入不等于已进入稳定发行版，本机未复现。",
+        meta: ["Linux x86-64 · THP / MADV_FREE", "中间数据风险 · 检查内核修复", "主干修复 · 发行版状态另查"],
+        source: "https://github.com/duckdb/duckdb/pull/28267",
+        playUrl: "https://github.com/torvalds/linux/commit/f7491d7c81db0e7c304a7bd757a76d2fbeaff80e",
+        playLabel: "Linux 上游修复 ↗"
+      },
+      {
+        category: "浏览器解谜 / 解蛇",
+        level: "趣味发现 · 非今日发布",
+        title: "Klubok：给缠在一起的小蛇找出场顺序",
+        summary: "建议 5–15 分钟：点击一条蛇，让它沿头部方向离开棋盘；先观察挡路的蛇和石头，清空整盘。",
+        why: "作者提供电脑鼠标 / 滚轮和手机、平板触控，页面目前显示俄语；源码 MIT。作者说明可安装为离线 PWA，首次访问需要联网，离线和触控本次未实测；账号与费用未核实。进度存在浏览器本地，清理网站数据可能丢失；官方入口可访问，未实际试玩。",
+        meta: ["5–15 分钟 · 排序解谜", "MIT · 鼠标 / 触控", "离线为作者说明 · 未试玩"],
+        source: "https://github.com/0fuz/klubok",
+        sourceLabel: "作者源码 / MIT ↗",
+        playUrl: "https://0fuz.github.io/klubok/",
+        playLabel: "打开官方游戏 ↗"
+      },
+      {
+        category: "浏览器游戏 / 霓虹弹球",
+        level: "趣味发现 · 非今日发布",
+        title: "Neon Pinball：把小球打进霓虹轨道",
+        summary: "建议 10–15 分钟：操作弹板、碰撞挡板并积累连击；想换口味时还能在同一个街机合集里选别的游戏。",
+        why: "作者说明支持键盘、触屏和手柄，免费、无账号，首次访问后可缓存离线；源码 MIT。分数和奖杯保存在本地，清除网站数据可能丢失。官方网页返回成功，但实际操控和离线本次未试玩验证。",
+        meta: ["10–15 分钟 · 弹球连击", "MIT · 键盘 / 触屏 / 手柄", "离线为作者说明 · 未试玩"],
+        source: "https://github.com/TMHSDigital/GH-Arcade",
+        sourceLabel: "街机合集源码 / MIT ↗",
+        playUrl: "https://tmhsdigital.github.io/GH-Arcade/games/pinball/",
+        playLabel: "打开官方弹球 ↗"
+      },
+      {
+        category: "创意编程 / 互动音画",
+        level: "趣味发现 · 非今日发布",
+        title: "Aftertouch：画出珊瑚和旋律，再把时间倒回去",
+        summary: "建议 5–15 分钟：按住并划动，让珊瑚生长、光点跟随并触发音符；按 R 回溯，再试另一种画法。",
+        why: "作者说明支持鼠标和触控，声音需主动开启；源码 MIT，第三方组件许可另看仓库。网页需要先联网，作者另提供单 HTML 离线版本；账号、费用、离线效果本次未实测。官方页面可访问，但没有实际试玩。",
+        meta: ["5–15 分钟 · 绘画 / 音符 / 回溯", "源码 MIT · 鼠标 / 触控", "另有离线文件 · 未试玩"],
+        source: "https://github.com/NickChaps/aftertouch",
+        sourceLabel: "作者源码 / 离线版本 ↗",
+        playUrl: "https://nickchaps.github.io/aftertouch/",
+        playLabel: "打开官方网页 ↗"
+      },
+      {
+        category: "浏览器游戏 / 即时战略",
+        level: "趣味发现 · 非今日发布",
+        title: "Voidcall：在 13 KB 的三维世界里指挥作战",
+        summary: "建议 15–20 分钟：用鼠标指挥单位、穿过地形并与对手交战；这个小型 WebGL 游戏由作者为游戏挑战制作。",
+        why: "适合电脑鼠标操作，网页需要支持 WebGL。源码 MIT，所用 Sonant-X 音频库采用 zlib 许可；账号、费用、手机操作、存档和离线未核实。官方页面可见开始入口，本次未实际试玩。",
+        meta: ["15–20 分钟 · 鼠标即时战略", "源码 MIT · 音频库 zlib", "WebGL · 未试玩"],
+        source: "https://github.com/phoboslab/voidcall",
+        sourceLabel: "作者源码 / MIT ↗",
+        playUrl: "https://phoboslab.org/voidcall/",
+        playLabel: "打开官方游戏 ↗"
+      },
+      {
+        category: "浏览器游戏 / 单词射击",
+        level: "趣味发现 · 非今日发布",
+        title: "ZType：打出敌机上的英文单词来开火",
+        summary: "建议 5–10 分钟：看到飞来的单词就用键盘输入，把打字练习变成街机射击。",
+        why: "官方网页适合电脑键盘，页面有广告与隐私说明。源码授权、账号、费用、手机体验、离线与存档机制未核实；页面可访问，本次没有实际试玩。",
+        meta: ["5–10 分钟 · 键盘打字", "官方网页含广告", "源码授权与离线未核实"],
+        source: "https://zty.pe/",
+        sourceLabel: "打开官方游戏 ↗"
+      },
+      {
+        category: "本地游戏 / 物理沙盒",
+        level: "趣味发现 · 非今日发布",
+        title: "Algodoo：画出齿轮、弹簧和流体做实验",
+        summary: "建议 15–30 分钟：在二维场景里画物体、连上绳索和弹簧，看看它们碰撞或转动时会发生什么。",
+        why: "官网提供 Windows / macOS 下载并说明电脑版本免费；iPad 版本的购买条件以官方商店为准。下载前需自行查看官网许可和隐私条款；源码是否开放、账号与离线情况未核实。本次只核验官方下载页，未代为同意条款或安装。",
+        meta: ["15–30 分钟 · 二维物理沙盒", "官网提供 Windows / macOS", "源码授权未核 · 未安装"],
+        source: "https://www.algodoo.com/",
+        sourceLabel: "官方网站 ↗",
+        playUrl: "https://www.algodoo.com/download/",
+        playLabel: "官方下载页面 ↗"
+      }
+    ],
+    deepDive: {
+      title: "SeedVR2 视频超分：让 VAE 切片跟着可用显存变化",
+      text: "SeedVR2 的视频 VAE 原先按最小时间切片处理，并把因果缓存送回主机内存；本次 ComfyUI 主干更新先根据当前空闲显存规划编码与解码的时间切片，空间充足且满足条件时让 FP16 缓存留在 GPU，否则回退主机。分块解码的输出也写入中间设备缓冲区，减少在 GPU 上积累帧。作者在 RTX 5090、81 帧、1248×720 的单组 3B 工作流中，分块总耗时由 38.3 秒降至 23.0 秒；非分块由 22.7 秒降至 17.3 秒。结果依赖显存余量、素材和其他节点，既不是统一最低显存，也不保证画质或速度在所有机器上相同。改动在 0.44.0 发布之后才合入；如果愿意测试主干，建议先固定模型、输入帧数和分辨率，对比完整工作流耗时、峰值显存及运动边缘，再决定是否用于长视频。本次未在本机复现。",
+      source: "https://github.com/Comfy-Org/ComfyUI/pull/17508"
+    },
+    noise: "判断而非事实：单张高端显卡上一次视频超分耗时下降，容易被误读成所有消费级显卡都能按同样比例加速；空闲显存、帧数、分块和模型配置都可能改变结果。"
+  },
+  {
     date: "2026-11-03",
     label: "NOV 03",
     pulse: "今天值得关注的是更可靠地把模型和硬件工具跑起来：大图 VAE 显存预留、VHDL 解析与机器人模型兼容性都有修复，Lattice FPGA 的乘加推断也更完整。研究截止北京时间 11 月 3 日 18:05：10 条技术信号，另附 6 项趣味发现；本地可部署数只统计 8 项有本地运行路径的技术工具，两项机器人兼容性实验均未计入。",
