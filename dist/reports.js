@@ -1,5 +1,198 @@
 window.DAILY_REPORTS = [
   {
+    date: "2026-11-05",
+    label: "NOV 05",
+    pulse: "今天的重点是把视觉模型与硬件真正接起来：语音驱动视频获得 ComfyUI 工作流，视频潜空间超分支持二次细化，Gowin 开源工具链和双臂机器人也有可复现方向。研究截止北京时间 11 月 5 日 10:22：10 条技术信号、6 项趣味发现；本地可部署数统计 8 项具备本地工具路径的技术项目，两个机器人实验不计入。",
+    metrics: [
+      { value: "16", label: "今日条目" },
+      { value: "8", label: "本地可部署" },
+      { value: "2", label: "具身进展" },
+      { value: "1", label: "FPGA / EDA" }
+    ],
+    items: [
+      {
+        category: "视频生成 / 语音驱动动画",
+        level: "NOV 05 COMMIT · 北京时间",
+        title: "Kandinsky S2V 增加 ComfyUI 工作流",
+        summary: "06:51 提交官方扩展：输入参考图与已有语音，生成说话者的全身视频；支持 Lite 和 Pro 蒸馏版，语音是输入条件。",
+        why: "适合愿意手动配置节点的本地视频实验者。官方在 H100 上限制 ComfyUI 使用 24 GB 显存并卸载模型，生成两段共 10 秒视频含加载耗时 Lite 115 秒、Pro 470 秒；不是 4090 实测或全机最低内存。需 CUDA、ComfyUI 0.38+，Lite / Pro 分别约 27 / 66 GB 下载；非蒸馏版和高清模式暂不支持。代码与 Lite 蒸馏权重 MIT，其他组件许可另核；尚需手动安装，本机未复现。",
+        meta: ["参考图 + 已有语音 · CUDA", "H100 / 24 GB 配额单例", "Lite 约 27 GB 下载 · 组件许可另核"],
+        source: "https://github.com/kandinskylab/kandinsky-s2v/commit/cc140d5a597c14957868df3d59924d8d9e4ed74e",
+        playUrl: "https://github.com/kandinskylab/kandinsky-s2v/blob/main/dev/comfyui/README.md",
+        playLabel: "官方配置与模型下载 ↗"
+      },
+      {
+        category: "视频生成 / 潜空间超分",
+        level: "NOV 05 MAIN · 北京时间",
+        title: "stable-diffusion.cpp 为 MiniMax-H3 增加视频二次超分",
+        summary: "02:59 合入：先生成低分辨率视频，再用插值或学习型 3D 潜空间超分放大并二次细化；时间轴保持不变。",
+        why: "适合想研究视频生成和超分工作流的用户。作者在 Windows CPU / MinGW、Q4_K_M 底模和 659 MB BF16 超分权重下，以 22 帧、512² 输出测试学习型超分 13.7 秒、细化 48.2 秒；一个输出保留音轨，但音频组合覆盖仍不完整。长片尚无时间分块、ROCm 未充分验证，首尾关键帧参数暂不支持。代码 MIT、第三方超分权重 Apache-2.0，H3 底模使用独立社区许可；未本机运行。",
+        meta: ["Windows CPU 单例 · 22 帧 / 512²", "学习型超分 + 二次细化", "长片无时间分块 · 底模许可另核"],
+        source: "https://github.com/leejet/stable-diffusion.cpp/pull/2249",
+        playUrl: "https://huggingface.co/LBH-123-AI/Minimax_h3_latent_Upscaler",
+        playLabel: "第三方超分权重 ↗"
+      },
+      {
+        category: "图像生成 / 多图编辑",
+        level: "NOV 04 MAIN · 非今日发布",
+        title: "P-H3-Image 可通过 stable-diffusion.cpp 本地生成与编辑",
+        summary: "11 月 4 日 23:24 合入：新增文生图、参考图编辑、8 步采样预设和本地服务示例；Pruna 的 ComfyUI 权重也已公开。",
+        why: "适合愿意下载多个组件并自行构建的人。作者示例使用 INT8 模型、Qwen3-VL-4B、单帧 VAE 和 CPU 卸载，未给出该路径的显存或耗时。模型卡的约 21 GB 峰值和约 20 GB 下载对应特定 ComfyUI 4-bit 配置，不能套用到 sd.cpp；扩写器另计。权重遵循 MiniMax H3 Community License，模型卡列有地区及其他使用限制，代码 MIT；安装与许可需逐项核对。",
+        meta: ["8 步 · 文生图 / 参考图", "21 GB 为不同 ComfyUI 配置", "权重有地区和使用条款"],
+        source: "https://github.com/leejet/stable-diffusion.cpp/pull/2272",
+        playUrl: "https://huggingface.co/PrunaAI/P-H3-Image-Comfy",
+        playLabel: "官方权重与许可 ↗"
+      },
+      {
+        category: "图像生成 / Vulkan 推理融合",
+        level: "NOV 05 MAIN · 北京时间",
+        title: "MOSS-Image 的运算融合扩展到 Vulkan 后端",
+        summary: "03:01 合入：stable-diffusion.cpp 融合部分归一化、调制和 RoPE 输出，减少 Vulkan 执行中的中间写入；这是昨日 CUDA 优化后的不同后端进展。",
+        why: "适合研究不同 GPU 后端的本地生图用户。作者在 RTX 4090 24 GB、MOSS-Image-SFT Q8_0、1024² 的三次交错测试中，采样由 1.403 升至 1.473 it/s；这不是完整出图时间，AMD 等其他品牌 GPU 未验证。代码 MIT，官方原始模型 Apache-2.0，量化文件及其余组件许可另查；主干代码未在本机复现。",
+        meta: ["Vulkan · RTX 4090 单一配置", "采样 1.403 → 1.473 it/s", "其他 GPU 尚无验证"],
+        source: "https://github.com/leejet/stable-diffusion.cpp/pull/2273"
+      },
+      {
+        category: "FPGA / Gowin DVI 视频输出",
+        level: "NOV 05 MAIN · 北京时间",
+        title: "Apicula 用 Verilog 重写双板 DVI 图样示例",
+        summary: "06:48 合入：用 Verilog 生成 640×480 彩色图样并输出 DVI；作者报告在 Tang Nano 9K 与 Tang Primer 20K 两块实板测试，也可用于 Gowin IDE。",
+        why: "适合想练习 FPGA 视频时序与 TMDS 输出的人。开源路径使用 Yosys、nextpnr-himbaechel 和 gowin_pack；examples 下可选择相应板卡的 dvi-example 目标。Makefile 默认允许时序失败，生成 bitstream 不等于时序通过；作者未给资源或时序数值，本机未烧板。Apicula MIT；与昨日 Lattice 属性兼容修复是不同器件和任务。",
+        meta: ["Tang Nano 9K / Primer 20K", "640×480 · Verilog / TMDS", "允许时序失败 · 须检查报告"],
+        source: "https://github.com/YosysHQ/apicula/pull/579",
+        playUrl: "https://github.com/YosysHQ/apicula/blob/master/examples/Makefile",
+        playLabel: "构建目标与时序选项 ↗"
+      },
+      {
+        category: "具身智能 / 双臂机器人驱动",
+        level: "NOV 05 MAIN · 北京时间",
+        title: "LeRobot 接入 YAM v1 单臂与双臂硬件",
+        summary: "02:39 合入：新增 YAM v1 的单臂 / 双臂驱动、关节限位、反馈超时和重力补偿，并接入遥操作、录制及策略执行。",
+        why: "适合研究可复现机器人控制的人。作者报告 Linux SocketCAN、双臂和三路 640×480 / 30fps 相机的 MolmoAct2 实机运行，10 秒片段中推理 29.82 Hz、插值动作 59.64 Hz；这不是抓取成功率。需要每臂 USB-CAN、YAM v1 和对应夹爪，首次下载 URDF；GPU 配置和成本未给出，载荷需重新校核。LeRobot 代码 Apache-2.0；所列约 21.8 GB 权重可查看，但模型许可与训练数据未明确，本机未测试。",
+        meta: ["YAM v1 双臂 · 三路 RGB", "实机速率观察 · 无成功率", "Linux / USB-CAN · 权重许可未明"],
+        source: "https://github.com/huggingface/lerobot/pull/4855",
+        playUrl: "https://huggingface.co/lerobot/MolmoAct2-BimanualYAM-LeRobot",
+        playLabel: "公开权重及模型卡 ↗"
+      },
+      {
+        category: "具身智能 / VLA TensorRT 掩码",
+        level: "NOV 05 MAIN · 北京时间",
+        title: "GR00T N1.7 完善填充掩码和 TensorRT 导出",
+        summary: "07:11 合入：补全视觉语言填充掩码，并让启用严格动作填充掩码的模型能够导出匹配的 TensorRT 引擎。",
+        why: "适合在 NVIDIA GPU 上训练或部署 VLA 的研究者。改变动作掩码配置后需重新导出引擎；启用严格视觉语言掩码时，部分注意力仍运行在 PyTorch，某些含填充的 TensorRT 批次会被拒绝。已有检查点为兼容默认保持关闭，因此不代表旧模型自动改进；本次没有新增实机成功率或显存下限。代码 Apache-2.0，N1.7 权重采用 NVIDIA Open Model License，硬件与数据需另核。",
+        meta: ["N1.7 · RGB / 状态 / 文本", "严格掩码须匹配导出引擎", "无新增实机结果 / 显存门槛"],
+        source: "https://github.com/NVIDIA/Isaac-GR00T/pull/801",
+        playUrl: "https://huggingface.co/nvidia/GR00T-N1.7-3B",
+        playLabel: "模型卡与许可 ↗"
+      },
+      {
+        category: "本地 LLM 推理 / OpenCL 注意力",
+        level: "NOV 05 MAIN · 北京时间",
+        title: "llama.cpp 的 OpenCL 路径覆盖更多注意力头尺寸",
+        summary: "02:45 合入：调整 Flash Attention 路径以处理更多分组查询与注意力头尺寸；这是昨日 Q2_0 矩阵向量优化之外的注意力更新。",
+        why: "适合自行构建并测试 OpenCL 推理的人。作者在 Gemma 4 12B Q4_K_M、4K 历史上下文的单例中，256 token 解码由 1.77 升至 13.33 token/s；PR 未说明测试设备型号，其他模型和驱动表现差异很大。6.62 GiB 是模型文件大小而非运行内存或推荐配置。代码 MIT，模型许可另查；主干未在本机复现。",
+        meta: ["OpenCL / Flash Attention", "单例：4K 上下文解码 1.77 → 13.33 token/s", "设备型号未说明 · 不能外推"],
+        source: "https://github.com/ggml-org/llama.cpp/pull/31633"
+      },
+      {
+        category: "LLM 推理服务 / WSL 显存识别",
+        level: "NOV 05 MAIN · 北京时间",
+        title: "vLLM 修复 WSL 下 NVIDIA 集成 GPU 的内存估算",
+        summary: "04:01 合入：Windows 的 WSL 环境使用 CUDA 报告的可用内存，而非将 WSL 虚拟机的可用 RAM 当作 GPU 分配预算。",
+        why: "适合在 WSL 笔记本或工作站上自托管模型的开发者。作者提供的测试机为 128 GB 系统内存、64 GB GPU 保留区域的 ASUS ProArt P16 RTX Spark；其 27B NVFP4 模型在特定配置下由启动失败变为成功，这不是普通 PC 的最低要求或速度测试。回归测试包含模拟硬件信息，未重新运行同机 WSL 模型；代码 Apache-2.0，具体模型许可另核。",
+        meta: ["WSL / NVIDIA 集成 GPU", "作者高内存工作站单例", "启动正确性 · 非性能提升"],
+        source: "https://github.com/vllm-project/vllm/pull/64782"
+      },
+      {
+        category: "编码 Agent / 工作区权限",
+        level: "NOV 05 MAIN · 北京时间",
+        title: "Codex 在启动隔离环境时统一解析工作区权限",
+        summary: "08:30 合入：合并额外权限后再解析工作区根目录规则，保留显式拒绝规则；空根目录列表不授予工作区访问。",
+        why: "适合关注本地编码 Agent 权限边界的人。更新还让 Windows 受限令牌准备使用共享转换路径；作者增加空根目录、子路径、拒绝规则和 Windows 包装参数测试。它是主干实现与测试变化，不能由此推断所有旧版本都存在同一漏洞，也不能替代对具体授权的检查；本机未验证该构建。",
+        meta: ["工作区根目录 / 显式拒绝", "Windows 受限令牌", "主干测试 · 非通用安全结论"],
+        source: "https://github.com/openai/codex/pull/59530"
+      },
+      {
+        category: "安卓游戏 / 逻辑谜题合集",
+        level: "趣味发现 · 非今日发布",
+        title: "Quiet Grid：手机里的一盒离线逻辑题",
+        summary: "建议 5–15 分钟：在数织、Takuzu、扫雷、动物数独等小游戏中随手挑一关，适合碎片时间。",
+        why: "作者与 F-Droid 说明适用于 Android 8.0+，免费、无广告和账号，可离线并在设备上保存进度；源码 GPL-3.0-only。F-Droid 列有通知、开机启动和振动等权限，通知用于可选提醒；清除应用数据可能丢失记录。本次没有安装或测试离线。",
+        meta: ["5–15 分钟 · Android 触控", "GPL-3.0-only · 免费", "离线为作者说明 · 未安装"],
+        source: "https://github.com/lendl/quiet-grid",
+        sourceLabel: "作者源码 / GPL-3.0-only ↗",
+        playUrl: "https://f-droid.org/en/packages/com.quietgrid.app/",
+        playLabel: "F-Droid 官方发行页 ↗"
+      },
+      {
+        category: "浏览器解谜 / 三维孔明锁",
+        level: "趣味发现 · 非今日发布",
+        title: "Interlocking Puzzle：拆开一把三维鲁班锁",
+        summary: "建议 10–20 分钟：双击选中零件，再用键盘前后左右移动，寻找能拆开互锁结构的顺序。",
+        why: "作者提供算法生成的三维拼锁和 MIT 源码，适合电脑鼠标加键盘；需要支持三维图形的浏览器。官方入口返回成功，但页面渲染、手机操作、费用、账号、存档和离线均未实测，也没有试玩。",
+        meta: ["10–20 分钟 · 拆解空间结构", "MIT · 电脑鼠标 / 键盘", "页面渲染和离线未验证"],
+        source: "https://github.com/anig1scur/interlocking-puzzle",
+        sourceLabel: "作者源码 / MIT ↗",
+        playUrl: "https://aeriszhu.com/interlocking-puzzle/",
+        playLabel: "打开官方网页 ↗"
+      },
+      {
+        category: "浏览器游戏 / 花园行走解谜",
+        level: "趣味发现 · 非今日发布",
+        title: "Squirm：带小虫走过旗帜、钻回洞里",
+        summary: "建议 5–15 分钟：在小花园里控制虫子走到每面旗帜，并调整身体长度回到洞口。",
+        why: "作者说明可用方向键 / WASD 或手机滑动，支持首次访问后的 PWA 离线；源码 MIT，需要 WebGL 浏览器。进度在本地，页面提供备份代码；站点有匿名统计选项，默认状态未核实。费用、账号、触控和离线本次未实测，未实际试玩。",
+        meta: ["5–15 分钟 · 方向键 / 滑动", "MIT · 存档可备份", "离线与统计默认状态未实测"],
+        source: "https://github.com/farzinmirzaie/squirm",
+        sourceLabel: "作者源码 / MIT ↗",
+        playUrl: "https://farzinmirzaie.github.io/squirm/",
+        playLabel: "打开官方游戏 ↗"
+      },
+      {
+        category: "浏览器沙盒 / 电路和机械",
+        level: "趣味发现 · 非今日发布",
+        title: "Joulefield：把灯、电机和齿轮连成一个沙盒",
+        summary: "建议 15–30 分钟：在网页摆放电源、灯、电机、齿轮或管道，连起来看它们如何互动。",
+        why: "更适合电脑鼠标操作。源码公开可查看，但仓库未找到许可证，授权状态不明；作者说明模拟未经独立工程审核，只供学习实验。在线版账号、费用、手机和离线未核实，本地副本可能随清除浏览器数据丢失；入口返回成功，未实际试玩。",
+        meta: ["15–30 分钟 · 电路 / 机械", "源码可查看 · 授权未明", "学习沙盒 · 未试玩"],
+        source: "https://github.com/nurlennart/physics-lab",
+        sourceLabel: "项目源码 / 许可证未明 ↗",
+        playUrl: "https://joulefield.com/",
+        playLabel: "打开官方网页 ↗"
+      },
+      {
+        category: "本地游戏 / 太空贸易探索",
+        level: "趣味发现 · 非今日发布",
+        title: "Endless Sky：开飞船做贸易、接任务和探险",
+        summary: "建议首次玩 20–30 分钟：驾驶飞船运货或载客，赚取升级资金，也可以探索新星系或与海盗交战。",
+        why: "官网提供 Windows、macOS、Linux 免费下载，适合电脑键盘和鼠标；程序代码 GPLv3 或更高，图像等素材许可各异。官方手册说明落地并操作时会自动保存，飞行中退出可能失去上次离港后的进度；账号和离线未独立核实，本次未安装或试玩。",
+        meta: ["20–30 分钟 · 太空贸易", "Windows / macOS / Linux", "代码 GPLv3+ · 素材许可各异"],
+        source: "https://github.com/endless-sky/endless-sky",
+        sourceLabel: "项目源码 / 许可说明 ↗",
+        playUrl: "https://github.com/endless-sky/endless-sky/releases",
+        playLabel: "官方发行下载 ↗"
+      },
+      {
+        category: "本地游戏 / 软体车辆模拟",
+        level: "趣味发现 · 非今日发布",
+        title: "Rigs of Rods：驾驶会变形的车和飞机",
+        summary: "建议首次玩 20–30 分钟：选择汽车、卡车或飞机，在软体物理环境里驾驶并观察车辆变形。",
+        why: "官网提供 Windows 和 Linux 下载，既有单人也有可选多人模式；官方 Windows 配置列出 4 GB 内存和 5 GB 空间。程序 GPLv3 或更高，素材及依赖许可另核；操作设备、账号和离线情况未独立核实，本次未安装或试玩。",
+        meta: ["20–30 分钟 · 车辆软体物理", "Windows / Linux · 官方列 4 GB RAM", "单人 / 可选多人 · 未安装"],
+        source: "https://github.com/RigsOfRods/rigs-of-rods",
+        sourceLabel: "项目源码 / GPLv3+ ↗",
+        playUrl: "https://www.rigsofrods.org/download",
+        playLabel: "官方下载中心 ↗"
+      }
+    ],
+    deepDive: {
+      title: "从 Verilog 到屏幕：Gowin FPGA 的 DVI 示例怎样复现",
+      text: "Apicula 的新示例把 DVI 图样驱动改写成 Verilog：以像素时钟生成 640×480 彩色图样，再编码为三路 TMDS 数据并通过器件的串行输出原语送出。作者报告在 Tang Nano 9K（GW1NR-LV9QN88PC6/I5）和 Tang Primer 20K（GW2A-LV18PG256C8/I7）两块板上测试，也可在 Gowin IDE 使用；PR 没有提供资源占用、布局布线时序或测试方法。开源复现路径为 Yosys 综合、nextpnr-himbaechel 布局布线，再由 gowin_pack 生成 bitstream；在 examples 目录可选择 make dvi-example-tangnano9k.fs 或 make dvi-example-primer20k.fs。需要对应板卡、视频连接与匹配的工具链和引脚约束。特别注意 Makefile 默认含 --timing-allow-fail：有 bitstream 并不证明时序收敛，建议先检查时钟约束和时序报告，再到实板观察显示效果。本次未在本机综合或烧板。",
+      source: "https://github.com/YosysHQ/apicula/pull/579"
+    },
+    noise: "判断而非事实：视频模型展示一段同步说话的画面，容易让人以为普通电脑都能实时生成；权重下载量、显存与系统内存、实际帧数和不同显卡的耗时都需要分别核对。"
+  },
+  {
     date: "2026-11-04",
     label: "NOV 04",
     pulse: "今天最值得关注的是本地工作流的内存与兼容性：SeedVR2 视频超分按显存调整切片，FLUX.3 提示词扩写器接入 InvokeAI，VHDL 工具与机器人策略也有实质更新。研究截止北京时间 11 月 4 日 16:28：10 条技术信号和 6 项趣味发现；本地可部署统计 8 项有本地运行路径的技术工具，两个具身实验保守起见未计入。",
