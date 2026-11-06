@@ -1,5 +1,198 @@
 window.DAILY_REPORTS = [
   {
+    date: "2026-11-06",
+    label: "NOV 06",
+    pulse: "今天值得关注的是让视觉模型和硬件更容易落地：RelayVSR 接入视频超分节点，INT4 生图推理获得新后端，Gowin 两块开发板的开源支持也有可复现进展。研究截止北京时间 11 月 6 日 12:20：10 条技术信号、6 项趣味发现；本地可部署统计 9 项有本地工具路径的技术项目，机器人仿真实验未计入。",
+    metrics: [
+      { value: "16", label: "今日条目" },
+      { value: "9", label: "本地可部署" },
+      { value: "1", label: "具身进展" },
+      { value: "2", label: "FPGA / EDA" }
+    ],
+    items: [
+      {
+        category: "视频超分 / 关键帧扩散",
+        level: "NOV 06 MAIN · 北京时间",
+        title: "RelayVSR 视频超分进入 ComfyUI 主干",
+        summary: "05:14 合入：新增视频条件和解码节点，利用稀疏关键帧与轻量逐帧解码器做 2× / 4× 放大；工作流不需要文本编码器。",
+        why: "适合愿意搭节点的视频修复实验者。新移植需要支持 window_attention 的 comfy-kitchen，长片使用分块和 INT8 KV 缓存；权重可用性与独立许可本次未核实，模型原项目代码为 Apache-2.0。PR 未给此次 ComfyUI 工作流的显存与速度数据，论文的 A100 结果不能直接套用；本机未复现。这是不同于 11 月 4 日 SeedVR2 切片和 5 日 H3 潜空间二次放大的模型。",
+        meta: ["2× / 4× · 每 15 帧关键帧", "主干节点 · 不需要文本编码器", "权重许可 / 显存要求待核"],
+        source: "https://github.com/Comfy-Org/ComfyUI/pull/17511",
+        playUrl: "https://github.com/kopperx/RelayVSR",
+        playLabel: "原项目与方法说明 ↗"
+      },
+      {
+        category: "图像生成 / INT4 推理加速",
+        level: "NOV 06 MAIN · 北京时间",
+        title: "stable-diffusion.cpp 加入打包 INT4 模型和 CUDA 优化",
+        summary: "00:35 开始支持 ComfyUI 的 W4A4 / W4A8 打包权重；01:59 又为符合条件的 CUDA 算子加入 CUTLASS 路径。",
+        why: "适合自行构建本地生图后端的人。作者在 Windows、RTX 4090 24 GB、CUDA 13.4 和 CPU 卸载的固定配置下，Krea2 512² 采样从 2.438 提升到 10.167 it/s；这是相同 INT4 权重的优化前后，非完整出图时间，也非与同画质 FP16 对比。相同设置的 INT8 参考值为 11.269 it/s。CPU、HIP、MUSA、Vulkan 有对应路径但具体设备兼容性需实测；代码 MIT、各模型权重许可另核。与昨日 H3 视频二次超分和 MOSS Vulkan 融合是不同进展。",
+        meta: ["Windows / RTX 4090 单例", "Krea2 采样 2.438 → 10.167 it/s", "INT4 主干 · 模型许可另核"],
+        source: "https://github.com/leejet/stable-diffusion.cpp/pull/2278",
+        playUrl: "https://github.com/leejet/stable-diffusion.cpp/pull/2276",
+        playLabel: "INT4 格式与后端支持 ↗"
+      },
+      {
+        category: "图像生成 / 文本编码器量化",
+        level: "NOV 06 MAIN · 北京时间",
+        title: "InvokeAI 可识别 MOSS-Image 的 INT8 文本编码器",
+        summary: "11:14 合入：修正 Comfy-Org 的 Qwen3.5 9B INT8 文件被识别为 Text LLM 的问题，并让加载器保留其量化线性层。",
+        why: "适合本地 MOSS-Image 工作流用户。量化编码器文件约 9.75 GB 是下载大小，不是整体显存要求；作者仅在 RTX 4090、1024²、30 步和 3 条提示词上比较，INT8 与 BF16 的细节有变化。URL / Starter 安装、ROCm、MPS 和 24 GB 以下显卡尚未实测；本地文件仍可能被识别成 Text LLM。主干代码与该量化文件标 Apache-2.0，其余模型组件许可另核。本次与昨日 MOSS Vulkan 算子融合关注的是不同部件。",
+        meta: ["Qwen3.5 9B INT8 · 文件约 9.75 GB", "RTX 4090 少量样本 · 非无损", "未验证 24 GB 以下显卡"],
+        source: "https://github.com/invoke-ai/InvokeAI/pull/10177",
+        playUrl: "https://huggingface.co/Comfy-Org/MOSS-Image/blob/main/text_encoders/qwen3.5_9b_int8_convrot.safetensors",
+        playLabel: "量化编码器与许可 ↗"
+      },
+      {
+        category: "FPGA / Gowin BSRAM 与 PLL",
+        level: "NOV 06 MAIN · 北京时间",
+        title: "Apicula 补齐 Tang Console 60K 的部分 BSRAM 与 PLL",
+        summary: "08:00 合入：针对 GW5AT-60B 修复 BSRAM 复位及部分连线，加入三个 PLL 位置并移植 11 个 BSRAM 示例。",
+        why: "适合使用 Yosys / nextpnr / Apicula 研究 Gowin 器件的人。作者用 Gowin 1.9.10.03 数据生成芯片库，在实体 Tang Console 60K 上报告 133 MHz、64 MB SDRAM 测试无错，以及手工例化 SDPB 读回正常；Yosys 推断的 4 位 DPB 仍读错，RGB 图样缺面板未测。示例默认允许时序失败，需检查自己的时序报告；无资源占用数据，MIT 代码，本机未烧板。不同于昨日 9K / 20K DVI 示例。",
+        meta: ["GW5AT-60B · Tang Console 60K", "实板 133 MHz SDRAM 测试", "推断 4 位 DPB 仍有读错"],
+        source: "https://github.com/YosysHQ/apicula/pull/573",
+        playUrl: "https://github.com/YosysHQ/apicula/blob/master/examples/gw5a/Makefile",
+        playLabel: "示例构建目标与时序选项 ↗"
+      },
+      {
+        category: "FPGA / JTAG 原语与时钟",
+        level: "NOV 06 MAIN · 北京时间",
+        title: "Tang Nano 4K 的 GW_JTAG 获得开源工具链支持",
+        summary: "05:25 合入 GW1NSR-4C 的 GW_JTAG 芯片库和打包支持，给用户逻辑提供 ER1 / ER2 JTAG 接口。",
+        why: "适合想在 Nano 4K 上实验片内调试的人。作者在实板对 5 个布局种子各做 299 次 32 位 ER1 往返测试；直接用 TCK 作时钟时其中一个布局有 275 次错误，即使 nextpnr 未报时序违规，改用板载 27 MHz 过采样后测试通过。复现依赖手工修改 Apicula 0.35 芯片库与指定 nextpnr 版本，PR 未附完整测试设计；代码 MIT，本机未上板。",
+        meta: ["Tang Nano 4K · GW1NSR-4C", "ER1 / ER2 · 5 个布局种子", "TCK 时钟风险 · 芯片库需手工调整"],
+        source: "https://github.com/YosysHQ/apicula/pull/578"
+      },
+      {
+        category: "具身智能 / 机械臂仿真评测",
+        level: "NOV 05 MAIN · 非今日发布",
+        title: "LeRobot 接入 RoboLab 桌面操作仿真",
+        summary: "11 月 5 日 22:41 合入：可在 Isaac Lab 中评测 RoboLab 的 120 项桌面任务，使用模拟 Franka 机械臂和 Robotiq 2F-85 夹爪。",
+        why: "适合研究 VLA 评测与仿真复现的人。作者在 RTX 4060 Ti 16 GB 上用未经 RoboLab 训练的 SmolVLA 运行 750 步冒烟测试，两个并行 episode 用时 144 秒，但未验证任务成功，也没有新的实机结果；另一次使用两路 720p 模拟相机。需 Isaac Sim 6.0.1、Isaac Lab 3.0 beta 2 及指定资产，依赖冲突可能需分离策略服务；代码和所用旧权重 Apache-2.0，资产多数受 CC BY-NC-SA 4.0 等条款约束。与昨日 YAM 双臂实机驱动是不同平台和进展。",
+        meta: ["仅仿真 · Franka + Robotiq", "RTX 4060 Ti 16 GB 冒烟测试", "无任务成功验证 · 资产许可另核"],
+        source: "https://github.com/huggingface/lerobot/pull/5194",
+        playUrl: "https://huggingface.co/lerobot/smolvla_robomme",
+        playLabel: "测试所用旧权重 ↗"
+      },
+      {
+        category: "本地 LLM 推理 / Hexagon 后端",
+        level: "NOV 06 MAIN · 北京时间",
+        title: "llama.cpp 修复 Hexagon 后端的张量管理",
+        summary: "10:15 合入：调整权重分块、同步和张量去重，并重新默认启用 Host Buffer；面向高通 Hexagon 本地推理后端。",
+        why: "适合自行编译移动端或高通 NPU 后端的人。作者说明默认 Host Buffer 有助于减少中间复制，但可能增加 NPU 虚拟地址空间压力；IQ8、IQ9 和较老 Android 手机可用 --no-host 恢复原行为。PR 没给具体端到端速度、内存或机型覆盖，代码 MIT、模型许可另核，尚需自行构建与验证；这是不同于昨日 OpenCL 注意力尺寸优化的后端改动。",
+        meta: ["Hexagon / 高通 NPU", "旧 Android / IQ8 / IQ9 可用 --no-host", "无具体速度和内存数据"],
+        source: "https://github.com/ggml-org/llama.cpp/pull/31744"
+      },
+      {
+        category: "编码 Agent / 提交失败恢复",
+        level: "NOV 06 MAIN · 北京时间",
+        title: "Codex 改进云端消息确认与草稿恢复",
+        summary: "11:51 合入：终端界面根据云端回执确认提交；拒绝或无法确认送达的内容保留，避免丢失草稿或自动重复发送。",
+        why: "适合使用 Codex 终端界面和云端会话的人。改动还按客户端消息 ID 协调恢复后的排队输入、会话中断和恢复；作者增加回执、排队顺序、丢失回复和恢复测试。这是主干可靠性修复，不表示当前安装版本已包含，也不能代替权限隔离或人工核对；未在本机复现。与昨日工作区权限解析更新不同。",
+        meta: ["终端界面 / 云端会话", "保留被拒绝或不确定的草稿", "作者回归测试 · 主干更新"],
+        source: "https://github.com/openai/codex/pull/59817"
+      },
+      {
+        category: "本地语音工具 / 日志隐私",
+        level: "NOV 06 MAIN · 北京时间",
+        title: "Hex 停止在事件日志保留听写原文并收紧权限",
+        summary: "05:55 和 06:09 合入两项修复：事件日志不再写入口述文本，Unix 日志目录与文件尽力收紧为仅所有者可读写。",
+        why: "适合在 macOS、Windows 或 Linux 使用本地语音输入的人。重要边界：旧日志里的原文不会自动删除，process.log 和导出的会议文件也有各自范围；权限收紧失败时应用会警告并继续，Windows 的权限行为不同。作者增加回归测试但未在其 Mac 上完成本机构建；新主干不代表已安装版本自动受保护。这里是 11 月 4 日 GPU 空闲优化之后的隐私新进展。",
+        meta: ["macOS / Windows / Linux", "旧日志不会自动清除", "权限收紧为尽力执行"],
+        source: "https://github.com/anomalyco/hex/pull/1423",
+        playUrl: "https://github.com/anomalyco/hex/pull/1424",
+        playLabel: "日志权限修复 ↗"
+      },
+      {
+        category: "数据库内核 / WAL 检查点",
+        level: "NOV 05 MAIN · 非今日发布",
+        title: "DuckDB 修复空 WAL 强制检查点期间的恢复问题",
+        summary: "11 月 5 日 22:00 合入：即使 WAL 起初为空，强制检查点也先轮转日志，避免期间提交的事务与数据库头使用不一致的代次。",
+        why: "适合关注嵌入式数据库持久化的开发者。此前特定并发顺序下重启可能无法打开数据库；作者新增在检查点期间提交、重启后核对全部 1010 行的回归测试。该修复仍是主干代码，不代表所有发行版已经包含；生产环境应核对版本并按项目文档备份，不要将它解读为所有 WAL 故障均已解决。",
+        meta: ["强制检查点 / 并发提交", "新增重启恢复回归测试", "主干修复 · 非今日发布"],
+        source: "https://github.com/duckdb/duckdb/pull/28274"
+      },
+      {
+        category: "物理沙盒 / 挖矿与电路建造",
+        level: "趣味发现 · 非今日发布",
+        title: "Cinderlift：挖矿、炼金属，再接线逃离星球",
+        summary: "建议 20–30 分钟：挖矿、熔炼并搭建传感器与线路；温度和材料会影响熔化、导热及机器运作。",
+        why: "官网提供免费的电脑浏览器和 Windows 测试版，键盘鼠标操作，并支持最多四人联机；浏览器版存档保存在本机，清除网站数据可能丢失。联机需联网，单机账号及离线条件尚未核实；Windows 下载尚未代码签名。源码公开但未找到明确许可，不能据此认定为标准开源。本次未安装或试玩。",
+        meta: ["20–30 分钟 · 桌面键鼠", "免费测试版 · 最多四人", "源码公开 / 许可未核实"],
+        source: "https://github.com/kylerharris730-source/crucible",
+        sourceLabel: "公开源码 / 许可待核 ↗",
+        playUrl: "https://cinderlift.com/",
+        playLabel: "官方页面在线玩 ↗"
+      },
+      {
+        category: "浏览器游戏 / 虚拟宠物养成",
+        level: "趣味发现 · 非今日发布",
+        title: "Tamagochi：照顾你的小宠物 Mori",
+        summary: "建议每天 5–10 分钟：喂食、洗澡、拥抱和探索，也能玩接星星与记忆小游戏。",
+        why: "作者说明电脑和手机浏览器适配，免费、无广告、无需账号，源码 MIT；首次联网安装成 PWA 后可离线是作者说明，本次未验证。进度保存在本机并可导出，清除网站数据可能丢失；官方入口服务器有响应，但本次未实际试玩。",
+        meta: ["5–10 分钟 · 电脑 / 手机", "免费免账号 · MIT", "本机存档可导出 · 离线未实测"],
+        source: "https://github.com/Tech-aficionado/Tamagochi---Open-Source-Game",
+        sourceLabel: "作者源码 / MIT ↗",
+        playUrl: "https://tamagochi-open-source-game.vercel.app/",
+        playLabel: "作者页面在线玩 ↗"
+      },
+      {
+        category: "浏览器游戏 / 弹幕擦弹",
+        level: "趣味发现 · 非今日发布",
+        title: "ArcadePipe：擦着弹幕飞，攒满全屏大招",
+        summary: "建议 3–10 分钟：飞机自动射击，控制方向从子弹旁擦过累积分数，蓄满 NOVA 后清场。",
+        why: "作者页说明电脑鼠标或手机触摸即可玩，免费、无需账号、无广告；排行榜需联网，个人最高分存于本机，清理浏览器数据可能丢失。代码 MIT，配乐不在 MIT 授权范围内；源码可本地运行但无在线排行榜，官方网页离线能力未验证。本次未试玩。",
+        meta: ["3–10 分钟 · 鼠标 / 触摸", "免费免账号 · 在线排行榜", "代码 MIT · 配乐另有版权"],
+        source: "https://github.com/pazpop/arcadepipe",
+        sourceLabel: "作者源码 / MIT ↗",
+        playUrl: "https://pazpop.itch.io/arcadepipe",
+        playLabel: "作者页面在线玩 ↗"
+      },
+      {
+        category: "互动可视化 / 物理实验",
+        level: "趣味发现 · 非今日发布",
+        title: "Physics Playground：在浏览器里玩六种物理实验",
+        summary: "建议 5–15 分钟：推倒多米诺、发射卫星、摆弄摆锤，或在水面上叠加波纹。",
+        why: "官方页面称无需下载或账号，可用电脑鼠标、键盘或触摸屏免费体验；可在当前浏览器保存一个场景，清理网站数据可能丢失。源码和许可证未找到，离线能力未知；页面文字和交互入口可读取，本次未实际试玩。",
+        meta: ["5–15 分钟 · 鼠标 / 键盘 / 触摸", "免费 · 无需账号", "源码与离线能力未核实"],
+        source: "https://random.express/physics-playground/",
+        sourceLabel: "官方实验说明 ↗",
+        playUrl: "https://random.express/physics-playground/",
+        playLabel: "打开物理沙盒 ↗"
+      },
+      {
+        category: "创意编程 / 程序生成锦鲤池",
+        level: "趣味发现 · 非今日发布",
+        title: "Nagomi：点一下水面，看锦鲤游过来",
+        summary: "建议 5–10 分钟：点击或触摸聚拢锦鲤，电脑按空格可驱散；水波、荷叶与天气一起变化。",
+        why: "作者提供浏览器入口和可选水声；源码公开但采用 PolyForm Noncommercial 1.0.0，限制商业用途，并非标准开源许可。入口的服务器响应正常，但未验证实际运行；收费、账号、离线及手机表现尚未核实，本次未试玩。",
+        meta: ["5–10 分钟 · 鼠标 / 触摸", "源码公开 · 限非商业用途", "实际运行与费用未核实"],
+        source: "https://github.com/msk1039/nagomi",
+        sourceLabel: "源码与非商业许可 ↗",
+        playUrl: "https://nagomi-blue.vercel.app/",
+        playLabel: "作者互动页面 ↗"
+      },
+      {
+        category: "浏览器游戏 / 维基跳转竞速",
+        level: "趣味发现 · 非今日发布",
+        title: "WikiSpeedrun：只靠词条链接抵达终点",
+        summary: "建议 5–15 分钟：从起点维基词条沿正文链接寻找终点，比比自己的用时和点击次数。",
+        why: "作者仓库说明无需注册、支持多语言和当局进度，源码 MIT；在线读取词条需要联网。官方入口服务器有响应，但网页脚本未执行验证；收费、手机适配与进度是否跨会话保留尚未核实，本次未试玩。",
+        meta: ["5–15 分钟 · 浏览器链接跳转", "无需注册 · 词条需联网", "MIT · 手机适配未核实"],
+        source: "https://github.com/B0und/WikiSpeedrun",
+        sourceLabel: "作者源码 / MIT ↗",
+        playUrl: "https://wikispeedrun.org/",
+        playLabel: "官方入口 ↗"
+      }
+    ],
+    deepDive: {
+      title: "RelayVSR：用稀疏关键帧减少视频超分的扩散计算",
+      text: "RelayVSR 的思路是把重计算集中到稀疏关键帧：每 15 帧用一步 Wan2.2 5B 处理关键帧，再让轻量 Flash 解码器结合关键帧潜变量与低清视频逐帧恢复细节。ComfyUI 新增条件和解码节点，提供 2× / 4× 工作流，不需要文本编码器；对长片使用分块因果注意力和 INT8 键值缓存。相比每帧都运行较重模型，这种设计旨在减少重复计算，但关键帧间的动态、细节一致性和真实画质需要用自己的素材比较。此次合入依赖支持 window_attention 的 comfy-kitchen；权重可访问性、独立许可、ComfyUI 版本的显存和耗时尚未核实，论文的 A100 数字也不是普通显卡的保证。建议先核对工作流及权重许可，用短片对比原视频和输出、检查细节闪烁，再决定是否尝试长片；本机未运行。",
+      source: "https://github.com/Comfy-Org/ComfyUI/pull/17511"
+    },
+    noise: "判断而非事实：一次 RTX 4090 上的 INT4 采样加速很容易被说成所有电脑都能更快出图。这里比较的是同一 INT4 路径的优化前后，INT8 在其中一个测试反而更快；模型质量、加载、编码器和不同后端都需要分别测量。"
+  },
+  {
     date: "2026-11-05",
     label: "NOV 05",
     pulse: "今天的重点是把视觉模型与硬件真正接起来：语音驱动视频获得 ComfyUI 工作流，视频潜空间超分支持二次细化，Gowin 开源工具链和双臂机器人也有可复现方向。研究截止北京时间 11 月 5 日 10:22：10 条技术信号、6 项趣味发现；本地可部署数统计 8 项具备本地工具路径的技术项目，两个机器人实验不计入。",
