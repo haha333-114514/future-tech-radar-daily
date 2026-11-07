@@ -1,5 +1,185 @@
 window.DAILY_REPORTS = [
   {
+  "date": "2026-11-07",
+  "label": "NOV 07",
+  "pulse": "今天的重点是视觉工作流与端侧推理的工程细节：Vulkan INT4 生图、GHDL 常量计算及机器人仿真控制都有具体修正。8 条技术信号与 3 项趣味发现；机器人仿真不计入本地工具数。",
+  "metrics": [
+    {
+      "value": "11",
+      "label": "今日条目"
+    },
+    {
+      "value": "7",
+      "label": "本地可部署"
+    },
+    {
+      "value": "1",
+      "label": "具身进展"
+    },
+    {
+      "value": "1",
+      "label": "FPGA / EDA"
+    }
+  ],
+  "items": [
+    {
+      "category": "图像生成 / INT4 Vulkan 推理",
+      "level": "NOV 07 MAIN · 北京时间",
+      "title": "stable-diffusion.cpp 将 INT4 加速扩展到 Vulkan",
+      "summary": "00:58 合入 NVIDIA cooperative matrix 路径，支持符合条件的 W4A4 / W4A8 算子。",
+      "why": "这是昨天 CUDA INT4 优化之后的不同后端进展。作者在 Windows、RTX 4090 24GB、CPU 卸载下，Krea2 512² 采样 2.113→7.855 it/s；同条件 INT8 为 9.224 it/s。仅是固定配置采样，不是完整出图时间；AMD 未测试，设备需支持相应 Vulkan 能力。代码 MIT，模型权重许可另核；本机未复现。",
+      "meta": [
+        "Vulkan · RTX 4090 单例",
+        "INT4 不保证快于 INT8",
+        "主干 · 权重许可另核"
+      ],
+      "source": "https://github.com/leejet/stable-diffusion.cpp/pull/2280"
+    },
+    {
+      "category": "图像处理 / 拼块接缝修复",
+      "level": "NOV 07 MAIN · 北京时间",
+      "title": "InvokeAI 修复图像拼块的接缝寻路偏移",
+      "summary": "06:30 合入：修正 Merge Tiles to Image 的 Seam 模式寻缝起点。",
+      "why": "适合使用分块生成或放大工作流的人。作者用 8×64 重叠样本及横纵方向回归测试，整个 tiles 套件 48 项通过；这不是自然图片画质或速度基准。Apache-2.0，主干更新，尚需等待发行版本或自行构建。",
+      "meta": [
+        "图像拼块 / Seam 模式",
+        "合成样本回归 · 非画质基准",
+        "Apache-2.0 · 主干"
+      ],
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/9602"
+    },
+    {
+      "category": "本地图像生成 / ARM64 CUDA 安装",
+      "level": "NOV 07 MAIN · 北京时间",
+      "title": "InvokeAI 改进 Linux ARM64 CUDA 开发安装",
+      "summary": "11:04 合入，让相应 ARM64 CUDA 安装获得匹配的 PyTorch 依赖。",
+      "why": "作者在 NVIDIA GB10 Spark 识别 CUDA 并生成 256² 图片，46 项测试通过、2 项跳过；需兼容 CUDA 的 NVIDIA 设备及 R580+ 驱动，ARM64 xformers wheel 可能缺失。没有速度或最低显存数据，不能推广到所有 ARM 设备；代码 Apache-2.0，模型许可另核。",
+      "meta": [
+        "Linux ARM64 · NVIDIA GB10",
+        "256² 冒烟测试",
+        "主干 · 驱动和依赖需核对"
+      ],
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/10188"
+    },
+    {
+      "category": "VHDL / GHDL 静态常量计算",
+      "level": "NOV 07 MAIN · 北京时间",
+      "title": "GHDL 修复 math_real 双参数函数静态展开",
+      "summary": "04:03 合入：修正静态展开时双参数 arctan 与 log 被误当成单参数的问题。",
+      "why": "适合在 VHDL 中用常量函数生成参数的工程师。作者示例 arctan(1,0) 由约 0.785 修正为约 1.571，log(8,2) 由约 2.079 修正为 3；运行时原本正确，作者称 GCC 后端未复现。新增回归测试，属于主干修复，无 FPGA 板级资源或时序结果。",
+      "meta": [
+        "VHDL · ieee.math_real",
+        "静态展开 / 常量计算",
+        "GCC 后端未复现"
+      ],
+      "source": "https://github.com/ghdl/ghdl/pull/3476"
+    },
+    {
+      "category": "具身智能 / 仿真控制器动作裁剪",
+      "level": "NOV 07 MAIN · 北京时间",
+      "title": "Isaac Lab 修复 IK 与 OSC 动作分量裁剪",
+      "summary": "07:25 合入：按位置、旋转、力等动作分量匹配裁剪，避免错误使用关节索引或漏执行裁剪。",
+      "why": "适合开发仿真机械臂控制器的人。作者在 stub 机械臂环境运行 19 项无 Kit 单元测试；未知名称和四元数分量裁剪会报错。未验证完整仿真控制器或实体机器人，不能视为实机安全验证；没有新权重、硬件成本或成功率数据。代码 BSD-3-Clause。",
+      "meta": [
+        "差分 IK / OSC · 仿真代码",
+        "19 项 stub 测试",
+        "无实体机器人验证"
+      ],
+      "source": "https://github.com/isaac-sim/IsaacLab/pull/8715"
+    },
+    {
+      "category": "本地 LLM 推理 / Hexagon 算子融合",
+      "level": "NOV 07 MAIN · 北京时间",
+      "title": "llama.cpp 融合 Gemma 的后归一化残差加法",
+      "summary": "08:07 合入，将 RMS_NORM、乘法与残差加法融合，减少一次独立算子调用与内存往返。",
+      "why": "这是昨日 Hexagon 张量管理修复之外的新进展。作者在 SA8797 和 Gemma-4-E4B 四核心、2048 token 预填充下测得 5350→5634 token/s；Qwen3.5 等前归一化模型不触发。仅一款设备配置，不代表所有手机；MIT 代码，模型许可另查，需自行构建。",
+      "meta": [
+        "Hexagon · SA8797 单例",
+        "Gemma 后归一化路径",
+        "Qwen3.5 不触发"
+      ],
+      "source": "https://github.com/ggml-org/llama.cpp/pull/31822"
+    },
+    {
+      "category": "LLM 推理服务 / CPU 推测解码",
+      "level": "NOV 07 MAIN · 北京时间",
+      "title": "vLLM 优化 CPU 上的 GDN 推测解码更新",
+      "summary": "10:40 合入：调整计算分块与状态缓存，减少推测解码验证时的重复内存访问。",
+      "why": "作者在 GCP c4-standard-48、23 线程、Qwen3.6-35B-A3B + DFlash2 单并发测试中，端到端吞吐 38.17→39.92 token/s；单算子改善更大但不能当成全链路加速。结果非逐位一致，依赖 CPU 指令和模型配置；Apache-2.0，模型许可及本机内存需求另核。",
+      "meta": [
+        "CPU · 23 线程云主机单例",
+        "端到端 38.17→39.92 token/s",
+        "主干 · 非逐位一致"
+      ],
+      "source": "https://github.com/vllm-project/vllm/pull/64829"
+    },
+    {
+      "category": "编码 Agent / 本地模型路由",
+      "level": "NOV 07 MAIN · 北京时间",
+      "title": "Ollama 修复启动 Claude Code 时的模型路由",
+      "summary": "10:28 合入：避免继承的 provider 设置将请求导向意外的服务，并在云模型退役时返回服务器错误。",
+      "why": "适合使用 ollama launch claude 的开发者；路由设置限定在子进程，保留已有配置和显式偏好。该改动不代表工具调用权限或数据隐私得到全面保证；属于主干，需核对安装版本与具体服务配置，本机未验证。",
+      "meta": [
+        "Ollama / Claude Code",
+        "子进程路由 · 410 错误",
+        "权限仍需自行配置"
+      ],
+      "source": "https://github.com/ollama/ollama/pull/19587"
+    },
+    {
+      "category": "浏览器游戏 / 乐器即兴与节奏",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Jam Jar：挑一支乐器，即兴叠出旋律",
+      "summary": "建议 5–15 分钟：选调式后点击音符或录制循环，也可以跟随光点闯节奏关卡。",
+      "why": "作者说明免费、无广告、无账号，支持鼠标、键盘和触摸；添加到主屏幕后可离线是作者说明，本次未测试。作品存浏览器，清理数据可能丢失；未找到源码或许可，未试玩。",
+      "meta": [
+        "5–15 分钟 · 键鼠 / 触摸",
+        "免费免账号 · 本机存档",
+        "源码未确认 · 离线未实测"
+      ],
+      "source": "https://gimblegaming.com/games/jam-jar/",
+      "playUrl": "https://gimblegaming.com/play/jam-jar/",
+      "playLabel": "官方页面在线玩 ↗"
+    },
+    {
+      "category": "浏览器游戏 / 机器人废料生存",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Junk Magnet：把废料吸成环绕机器人的武器",
+      "summary": "建议 10–15 分钟：躲避敌人、捡废料自动发射，再选择升级继续生存。",
+      "why": "官方说明免费无广告、无账号，电脑 WASD / 方向键或手机触控；进度存浏览器，清理数据可能丢失。原创代码和素材 MIT，第三方字体与音效许可另核；离线未确认，未试玩。",
+      "meta": [
+        "10–15 分钟 · 键盘 / 触摸",
+        "免费免账号",
+        "MIT · 第三方素材许可另核"
+      ],
+      "source": "https://github.com/SafaElmali/junk-magnet",
+      "playUrl": "https://playjunkmagnet.com/play/",
+      "playLabel": "官方页面在线玩 ↗"
+    },
+    {
+      "category": "浏览器游戏 / 复古分岔赛车",
+      "level": "趣味发现 · 非今日发布",
+      "title": "TEB RUN：开着复古跑车穿越分岔路",
+      "summary": "建议 5–10 分钟：在限时内通过检查点，选择道路和背景音乐。",
+      "why": "作者说明免费无广告、无账号，支持电脑键盘或手柄、手机横屏触控；在线挑战榜与匿名访问统计存在，离线和存档未核实。代码 MIT，官方美术、音乐和名称保留版权，源码版使用程序生成素材；未实际试玩。",
+      "meta": [
+        "5–10 分钟 · 键盘 / 手柄 / 触屏",
+        "免费免账号 · 在线榜",
+        "代码 MIT · 官方素材保留版权"
+      ],
+      "source": "https://github.com/tebeus/teb-run",
+      "playUrl": "https://play.tebrun.io/",
+      "playLabel": "官方页面在线玩 ↗"
+    }
+  ],
+  "deepDive": {
+    "title": "VHDL 常量计算：为什么静态展开的数学函数值得检查",
+    "text": "GHDL 此次修复针对 ieee.math_real 的双参数 arctan(y,x) 和 log(x,base) 在静态展开阶段错误丢失第二个参数。它影响编译期计算常量的设计，而运行时函数原本正确；作者指出 GCC 后端未复现，并加入回归用例。对于依赖计算常量生成参数的工程，可先在目标 GHDL 版本用 arctan(1,0) 和 log(8,2) 写最小断言，检查结果约为 π/2 与 3，再结合现有仿真测试确认。该修复没有板级时序、资源或实机测试，不能推断 FPGA 设计已被验证。本机未运行仿真。",
+    "source": "https://github.com/ghdl/ghdl/pull/3476"
+  },
+  "noise": "判断而非事实：单个 INT4 核心的加速数字可能让人以为低位量化总比 INT8 快；显卡能力、算子形状、模型质量和完整工作流都可能改变结论。"
+},
+  {
     date: "2026-11-06",
     label: "NOV 06",
     pulse: "今天值得关注的是让视觉模型和硬件更容易落地：RelayVSR 接入视频超分节点，INT4 生图推理获得新后端，Gowin 两块开发板的开源支持也有可复现进展。研究截止北京时间 11 月 6 日 12:20：10 条技术信号、6 项趣味发现；本地可部署统计 9 项有本地工具路径的技术项目，机器人仿真实验未计入。",
