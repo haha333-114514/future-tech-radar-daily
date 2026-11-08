@@ -1,5 +1,217 @@
 window.DAILY_REPORTS = [
   {
+  "date": "2026-11-08",
+  "label": "NOV 08",
+  "pulse": "今天的信号集中在视频工作流的内存使用、开源 HDL 仿真正确性，以及可追溯的机器人仿真到实机数据。9 条技术信号、4 项趣味发现；具身项目不计入本地工具数。",
+  "metrics": [
+    {
+      "value": "13",
+      "label": "今日条目"
+    },
+    {
+      "value": "8",
+      "label": "本地可部署"
+    },
+    {
+      "value": "1",
+      "label": "具身进展"
+    },
+    {
+      "value": "2",
+      "label": "FPGA / EDA"
+    }
+  ],
+  "items": [
+    {
+      "category": "视频处理 / 解码内存优化",
+      "level": "NOV 08 MAIN · 北京时间",
+      "title": "ComfyUI 减少视频解码时的帧复制",
+      "summary": "08:50 合入：不再先保存完整帧列表再 stack，降低长视频解码物理内存峰值。",
+      "why": "作者 CPU 测试 300 帧 1080p、7.46 GB float32 帧数据时，Windows 物理 RAM 额外峰值由约 2.0 倍降至 1.1 倍；Windows 虚拟内存提交仍约 2.1 倍，CUDA aimdo 路径未测。适合处理长片的工作流用户；不是显存或速度保证，主干未在本机复现。",
+      "meta": [
+        "300 帧 / 1080p · CPU 单例",
+        "Windows 物理内存约 2.0× → 1.1×",
+        "虚拟内存提交仍约 2.1×"
+      ],
+      "source": "https://github.com/Comfy-Org/ComfyUI/pull/17562"
+    },
+    {
+      "category": "视频超分 / RelayVSR 本地推理",
+      "level": "NOV 08 MAIN · 北京时间",
+      "title": "stable-diffusion.cpp 增加 RelayVSR 命令行路径",
+      "summary": "00:09 合入实验性 2× / 4× 视频超分 CLI、C API 与 CUDA 窗口注意力。",
+      "why": "这是 11 月 6 日 ComfyUI 原生接入后的另一运行路径，不是新模型。需准备有序 RGB 帧、指定帧率并匹配倍数对应的模型与 decoder；输出不保留音轨，完整输入输出帧仍占主机内存。CUDA 融合路径要求算力 8.0+，其他后端回退；PR 未给速度或显存实测。代码 MIT，所列 Comfy-Org 权重页标 Apache-2.0。",
+      "meta": [
+        "CLI / C API · 2× / 4×",
+        "输入输出帧占主机内存",
+        "音轨需另行处理 · 主干"
+      ],
+      "source": "https://github.com/leejet/stable-diffusion.cpp/pull/2285",
+      "playUrl": "https://huggingface.co/Comfy-Org/RelayVSR",
+      "playLabel": "权重与许可 ↗"
+    },
+    {
+      "category": "图像生成 / LoRA 强度正确性",
+      "level": "NOV 08 MAIN · 北京时间",
+      "title": "InvokeAI 修复 PEFT LoRA 保存的 alpha 被忽略",
+      "summary": "01:46 合入，涉及 Z-Image、Qwen-Image 和 Anima 的适配器。",
+      "why": "作者举例 rank 16、alpha 1 时旧逻辑可能将更新放大 16 倍。Windows CPU 上相关套件 450 通过、4 个 GPU 测试跳过；未做完整 GPU 生图。受影响旧工作流升级后风格强度可能变化，适合先对照固定种子；代码 Apache-2.0，模型许可另核。",
+      "meta": [
+        "PEFT LoRA / alpha",
+        "CPU 回归 · 未做 GPU 生图",
+        "旧工作流效果可能变化"
+      ],
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/10156"
+    },
+    {
+      "category": "FPGA / SystemVerilog 仿真正确性",
+      "level": "NOV 08 MAIN · 北京时间",
+      "title": "Verilator 修复宽数组反向索引的整体复制",
+      "summary": "04:56 合入：元素宽度超过 64 位、源和目标 unpacked array 索引方向相反时，整体复制可能未更新目标。",
+      "why": "适合用 SystemVerilog 仿真宽数组的验证工程师。问题涉及 -fno-slice 或超过切片阈值的路径，作者增加回归；这是 CPU 仿真修复，不是 FPGA 频率或板级测试。代码 LGPL-3.0 / Artistic-2.0，主干版本。",
+      "meta": [
+        "宽于 64 位 / unpacked array",
+        "索引方向相反",
+        "仿真正确性 · 非板级验证"
+      ],
+      "source": "https://github.com/verilator/verilator/pull/9075"
+    },
+    {
+      "category": "FPGA / SDF 后仿真",
+      "level": "NOV 08 MAIN · 北京时间",
+      "title": "Icarus Verilog 增加部分条件 SDF 延迟匹配",
+      "summary": "07:09 合入：支持局部 1 位信号比较与有序 && 条件的部分路径延迟。",
+      "why": "作者的示例输入在 100ps 上升，旧行为 101ps 输出，新行为按 SDF 3ps 路径在 103ps 输出，新增 6 项回归。仅覆盖受限条件；或运算、层级与向量等仍不支持。GPL 代码，主干未本机复现，不代表全部门级时序场景可用。",
+      "meta": [
+        "SDF / 门级时序仿真",
+        "受限的 1 位条件与 &&",
+        "不支持全部条件表达式"
+      ],
+      "source": "https://github.com/steveicarus/iverilog/pull/1718"
+    },
+    {
+      "category": "具身智能 / 合成数据与零样本迁移",
+      "level": "NOV 06 · 非今日发布",
+      "title": "ToyBlocks 用仿真生成积木操作演示",
+      "summary": "AllenAI 发布使用 Isaac Lab 特权状态、RL 技能和任务规划生成积木操作演示的方法与数据。",
+      "why": "数据卡称 85,336 段仿真演示、约 1600 小时，代码 Apache-2.0、数据 ODC-BY；训练数据及素材条款需另核。作者在真实 Franka FR3、Robotiq 夹爪、前置 ZED 和腕部 ZED Mini 上验证，特定简单任务仿真 111/200、实机 15/30；小样本不能证明普遍泛化。公开代码、数据和权重；GPU 门槛与硬件成本未确认。 官方要求 Linux、NVIDIA GPU、Isaac Sim 5.1；实机策略运行代码和系统辨识指南仍待发布，因此尚不能完整复现实机流程。",
+      "meta": [
+        "Franka FR3 · 双相机 · 实机 15/30",
+        "仿真数据 85,336 段",
+        "零样本迁移 · 限定任务"
+      ],
+      "source": "https://huggingface.co/blog/allenai/toyblocks",
+      "playUrl": "https://github.com/allenai/ToyBlocks",
+      "playLabel": "代码与复现说明 ↗"
+    },
+    {
+      "category": "本地 LLM 推理 / Windows Hexagon",
+      "level": "NOV 08 MAIN · 北京时间",
+      "title": "llama.cpp 改进 Windows 上 Hexagon 库加载",
+      "summary": "08:25 合入：优先通过绝对路径查找 libhtp，并支持长路径和非 ASCII 安装目录。",
+      "why": "适合在 Windows 高通设备上自行构建本地推理的用户；这是昨日 Hexagon 算子融合之外的安装兼容性进展。PR 未给硬件覆盖、性能或完整安装测试数据；MIT 代码，仍需匹配硬件、后端和模型许可。",
+      "meta": [
+        "Windows / Hexagon",
+        "长路径与非 ASCII 目录",
+        "主干 · 未给性能数据"
+      ],
+      "source": "https://github.com/ggml-org/llama.cpp/pull/31781"
+    },
+    {
+      "category": "编码 Agent / 侧边会话恢复",
+      "level": "NOV 08 MAIN · 北京时间",
+      "title": "Codex 为本地工作区侧边会话增加持久化",
+      "summary": "01:31 合入：在支持本地历史的工作区中保存侧边会话，并可重启后重新打开。",
+      "why": "适合在终端中处理并行任务的用户；新增关闭标签操作，涉及停止任务、丢失未发送输入或临时历史时显示确认。作者提供重开与关闭回归测试；功能位于主干，现有安装版本是否包含需核对，不代表权限隔离变化。",
+      "meta": [
+        "终端侧边会话 / 本地历史",
+        "关闭前保护未发送输入",
+        "主干 · 版本需核对"
+      ],
+      "source": "https://github.com/openai/codex/pull/60152"
+    },
+    {
+      "category": "Python 工具链 / 依赖约束解析",
+      "level": "NOV 08 MAIN · 北京时间",
+      "title": "uv 修复约束中负向 extra 标记被忽略",
+      "summary": "09:33 合入：约束条件中的 extra 不等式现在参与依赖解析。",
+      "why": "作者指出旧行为可能产生与 pyproject.toml 要求不一致的锁文件，并增加回归。适合维护可选依赖与锁文件的 Python 开发者；这是主干修复，具体影响取决于依赖配置，升级后宜检查锁文件差异。",
+      "meta": [
+        "依赖约束 / extra 标记",
+        "锁文件正确性",
+        "主干 · 检查升级差异"
+      ],
+      "source": "https://github.com/astral-sh/uv/pull/23144"
+    },
+    {
+      "category": "浏览器解谜 / 三维数字配对",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Zuzzle3D：旋转立方体配对数字",
+      "summary": "建议 5–15 分钟：旋转立方体，把可连通的相同数字或总和为 10 的数字配对清空。",
+      "why": "官网称免费免账号、电脑和手机可玩，需 WebGL；PWA 离线是作者说明，未实测。存档在本机，清除浏览器数据可能丢失；源码与许可未核实，本次未试玩。",
+      "meta": [
+        "5–15 分钟 · 电脑 / 手机",
+        "免费免账号 · WebGL",
+        "源码与离线未核实"
+      ],
+      "source": "https://zuzzle3d.mikepenz.dev/",
+      "playUrl": "https://zuzzle3d.mikepenz.dev/play.html",
+      "playLabel": "官方页面在线玩 ↗"
+    },
+    {
+      "category": "浏览器游戏 / GitHub 仓库猜谜",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Gitdle：从被遮住的 README 猜仓库",
+      "summary": "建议 5–10 分钟：六次内猜出仓库，每次根据语言、星数范围和创建年份缩小范围。",
+      "why": "官网说明免费、支持历史题，进度与连续天数保存在浏览器；读取 GitHub 数据需联网，清除站点数据可能丢失。账号要求、手机适配、源码和许可未核实；未实际试玩。",
+      "meta": [
+        "5–10 分钟 · 键盘输入",
+        "免费 · 需要联网",
+        "源码 / 账号要求未核实"
+      ],
+      "source": "https://gitdle.com/",
+      "playUrl": "https://gitdle.com/",
+      "playLabel": "官方页面在线玩 ↗"
+    },
+    {
+      "category": "浏览器游戏 / 单键无尽跑酷",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Keep Pace：短按跳，长按跳得更高",
+      "summary": "建议 1–5 分钟：控制跳跃高度，连续避开障碍。",
+      "why": "官网说明免费、无广告、无需账号；手机触屏、电脑空格 / W / 上方向键操作。局中不能暂停，也没有中途存档；源码许可和离线能力未核实，本次未试玩。",
+      "meta": [
+        "1–5 分钟 · 键盘 / 触屏",
+        "免费免账号 · 无广告",
+        "不能暂停 · 离线未实测"
+      ],
+      "source": "https://launchwaygames.com/keep-pace?lang=en",
+      "playUrl": "https://launchwaygames.com/keep-pace?lang=en",
+      "playLabel": "官方页面在线玩 ↗"
+    },
+    {
+      "category": "浏览器游戏 / 卡通小镇与小游戏",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Wobblewick：布置小屋并玩迷你游戏",
+      "summary": "建议 10–20 分钟：浏览器版可以布置小屋、带小狗、乘车并玩小游戏。",
+      "why": "官网称网页版本免费、免账号且无广告内购，支持鼠标、键盘与触控；进度在本机，清理浏览器数据可能丢失。另有独立 Roblox 版本，其账号与付费条件不同；网页源码许可与离线能力未核实，未试玩。",
+      "meta": [
+        "10–20 分钟 · 浏览器",
+        "网页免费免账号",
+        "本机存档 · 离线未核实"
+      ],
+      "source": "https://wobblewick.com/",
+      "playUrl": "https://wobblewick.com/play/",
+      "playLabel": "官方网页版本 ↗"
+    }
+  ],
+  "deepDive": {
+    "title": "ToyBlocks：从仿真积木演示到真实机械臂",
+    "text": "ToyBlocks 在 Isaac Lab 中利用可访问的仿真特权状态、强化学习技能和任务规划生成积木操作轨迹，再以 LeRobot 格式提供训练数据。公开数据卡声称 85,336 段约 1600 小时的仿真演示；这些并非真实机器人采集。作者在 Franka FR3、Robotiq 夹爪、前置 ZED 与腕部 ZED Mini 上做零样本迁移，简单的字母朝上长程任务报告实机 15/30，仿真 111/200。受样本规模、任务和硬件限制，不应把这一结果视为通用实机能力。代码、数据与模型权重公开，但训练数据与场景素材存在各自许可；最低显存与硬件成本未核实。建议先阅读数据卡、评测协议及许可，再以仿真跑通单任务，最后才考虑匹配传感器和真实平台；本机未复现。 官方安装使用 Linux、NVIDIA GPU 和 Isaac Sim 5.1；实机策略代码及系统辨识指南仍待发布。",
+    "source": "https://huggingface.co/blog/allenai/toyblocks"
+  },
+  "noise": "判断而非事实：机器人在一段积木演示中成功，并不能证明它对新物体、新相机和其他任务都稳定；应优先看任务定义、真实机器人次数和数据能否复现。"
+},
+  {
   "date": "2026-11-07",
   "label": "NOV 07",
   "pulse": "今天的重点是视觉工作流与端侧推理的工程细节：Vulkan INT4 生图、GHDL 常量计算及机器人仿真控制都有具体修正。8 条技术信号与 3 项趣味发现；机器人仿真不计入本地工具数。",
