@@ -1,5 +1,187 @@
 window.DAILY_REPORTS = [
   {
+  "date": "2026-11-09",
+  "label": "NOV 09",
+  "pulse": "今天关注点是 SeedVR2 新的本地运行路径、Wan 文本编码器量化，以及 VHDL 验证与机器人仿真正确性。8 条技术信号、3 项趣味发现；机器人仿真不计入本地工具数。",
+  "metrics": [
+    {
+      "value": "11",
+      "label": "今日条目"
+    },
+    {
+      "value": "7",
+      "label": "本地可部署"
+    },
+    {
+      "value": "1",
+      "label": "具身进展"
+    },
+    {
+      "value": "2",
+      "label": "FPGA / EDA"
+    }
+  ],
+  "items": [
+    {
+      "category": "图像视频超分 / SeedVR2",
+      "level": "NOV 09 MAIN · 北京时间",
+      "title": "stable-diffusion.cpp 增加 SeedVR2 超分",
+      "summary": "01:13 合入 3B / 7B 的图像与视频超分，支持时间分块。",
+      "why": "这是 11 月 4 日 ComfyUI 显存调度及昨日 RelayVSR 之外的新运行路径。实验性接入需匹配 INT8 ConvRot 权重和 VAE，无需文本编码器；视频需有序帧，输出不复制音轨。作者测试 3B CUDA / CPU，7B 仅 CUDA 小输入；1728×960、5 帧块曾超过 24GB 显存，块边界可能可见。代码 MIT，原始 3B 权重 Apache-2.0，量化权重另核；无本机实测。",
+      "meta": [
+        "3B / 7B · 时间分块",
+        "1728×960 五帧曾超过 24GB",
+        "音轨另处理 · 实验性"
+      ],
+      "source": "https://github.com/leejet/stable-diffusion.cpp/pull/2300",
+      "playUrl": "https://github.com/leejet/stable-diffusion.cpp/blob/master/docs/seedvr2.md",
+      "playLabel": "官方运行说明 ↗"
+    },
+    {
+      "category": "视频生成 / GGUF 文本编码器",
+      "level": "NOV 09 MAIN · 北京时间",
+      "title": "InvokeAI 支持 Wan 2.2 的 GGUF UMT5 编码器",
+      "summary": "01:56 合入：修正旧版误识别，并支持压缩线性权重和 GGUF 内置 tokenizer。",
+      "why": "适合需要节省文本编码器显存的本地视频生成用户。作者 RTX 4090 单例：Q8_0 编码器约 6.9 GiB、Q4_K_M 约 4.8 GiB，BF16 对照约 10.8 GiB；只是编码器而非整套模型最低显存，Q4 条件向量偏差明显。已安装的旧条目需重新识别；主干功能，组件及权重许可分别核对。",
+      "meta": [
+        "RTX 4090 · 编码器单独计量",
+        "Q8 6.9 GiB / Q4 4.8 GiB",
+        "Q4 偏差明显 · 非整套门槛"
+      ],
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/9967"
+    },
+    {
+      "category": "VHDL / VPI 复合信号",
+      "level": "NOV 08 MAIN · 非今日发布",
+      "title": "GHDL 改进 VPI 对 record 字段的访问",
+      "summary": "11 月 8 日 15:03 合入：可遍历和读写 VHDL record 信号、端口及嵌套字段，支持字段回调。",
+      "why": "作者增加 vpi013 测试并报告小型 cocotb 示例；record 内数组与 record 数组仍跳过。适合编写 Python / VPI 验证接口的人；软件仿真功能，没有 FPGA 实板或时序数据。与 11 月 7 日 math_real 修复不同。",
+      "meta": [
+        "VHDL record / VPI / cocotb",
+        "嵌套字段与回调",
+        "数组场景仍不支持"
+      ],
+      "source": "https://github.com/ghdl/ghdl/pull/3477"
+    },
+    {
+      "category": "FPGA / SDF 时间单位",
+      "level": "NOV 09 MAIN · 北京时间",
+      "title": "Icarus Verilog 修复跨时间单位 SDF 回注",
+      "summary": "00:13 合入：修正混合模块时间单位时 INTERCONNECT 延迟的缩放。",
+      "why": "作者示例中 7 ps 曾被错误解释为 7 ns；Linux amd64 的 13 项标量测试通过。完整测试中候选和基线均有 libbzip2 环境失败，不能说全套通过；GPL 主干更新，不是板级时序测试。不同于昨日条件 SDF 匹配。",
+      "meta": [
+        "SDF INTERCONNECT / 时间单位",
+        "13 项标量测试通过",
+        "全套测试存在环境失败"
+      ],
+      "source": "https://github.com/steveicarus/iverilog/pull/1720"
+    },
+    {
+      "category": "具身智能 / 仿真相机几何",
+      "level": "NOV 09 MAIN · 北京时间",
+      "title": "Isaac Lab 修复相机坐标变换舍入问题",
+      "summary": "03:47 合入：改用确定性列重排，避免 TF32 舍入破坏旋转矩阵正交性。",
+      "why": "针对 RayCasterCamera 仿真相机异常读数；作者报告 CPU 数学测试 122 通过、3 跳过，原生 CUDA 验证仍待完成。没有新增实体机器人、数据或权重，也不是实机感知精度基准；代码 BSD-3-Clause。与 11 月 7 日动作裁剪修复不同。",
+      "meta": [
+        "RayCasterCamera · 仿真",
+        "CPU 数学测试 122 通过",
+        "CUDA / 实机未验证"
+      ],
+      "source": "https://github.com/isaac-sim/IsaacLab/pull/8925"
+    },
+    {
+      "category": "本地 LLM 服务 / AMD 显存计量",
+      "level": "NOV 09 MAIN · 北京时间",
+      "title": "vLLM 修正部分 ROCm 独显的 KV 缓存预算",
+      "summary": "04:39 合入：对未分区独显使用更精确的设备显存占用计数，避免可用空间被保守估计。",
+      "why": "作者在 Radeon AI PRO R9700 32GB、Llama 3.1 8B 的单次测试中，KV 缓存 51,712→76,288 tokens；集显、分区 GPU 和无法核对 sysfs 的情况保持原路径。MI 系列、多 GPU 与推测解码未验证；这是特定服务配置非通用吞吐承诺。Apache-2.0，模型许可另核。",
+      "meta": [
+        "ROCm / R9700 32GB 单例",
+        "KV 51,712 → 76,288 tokens",
+        "集显与分区 GPU 不适用"
+      ],
+      "source": "https://github.com/vllm-project/vllm/pull/63401"
+    },
+    {
+      "category": "编码 Agent / 云会话恢复",
+      "level": "NOV 09 MAIN · 北京时间",
+      "title": "Codex 防止恢复云会话时重复显示回复",
+      "summary": "11:01 合入：根据会话轮次和消息 ID 去重历史回放后迟到的通知。",
+      "why": "适合使用终端云会话的开发者；作者新增恢复与持续流式输出的回归测试。它针对界面重复呈现，不代表请求本身一定执行一次，也不替代权限隔离；主干变更需核对安装版本。",
+      "meta": [
+        "云会话 / TUI",
+        "回放与通知去重",
+        "主干 · 非执行次数保证"
+      ],
+      "source": "https://github.com/openai/codex/pull/60335"
+    },
+    {
+      "category": "数据库内核 / Bloom 过滤器",
+      "level": "NOV 09 MAIN · 北京时间",
+      "title": "DuckDB 修复行号过滤时的哈希缓冲区越界",
+      "summary": "03:52 合入：当行删除后选择向量仍指向原始范围时，Bloom 过滤器改用完整扫描宽度。",
+      "why": "作者用 AddressSanitizer 复现越界，修复后针对性测试 18 项断言通过；较大测试组仍有一个在 ASan 内存限制下失败，不能称全套通过。属于主干数据处理正确性修复，用户应核对实际发行版本；不同于 11 月 6 日 WAL 检查点问题。",
+      "meta": [
+        "rowid / Bloom filter",
+        "ASan 针对性回归",
+        "大测试组存在内存限制失败"
+      ],
+      "source": "https://github.com/duckdb/duckdb/pull/28505"
+    },
+    {
+      "category": "浏览器游戏 / 粒子探测放置",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Particle Clicker：从点击探测器开始做科研",
+      "summary": "建议 10–20 分钟：点击收集数据、招研究人员并解锁粒子发现。",
+      "why": "CERN Webfest 项目，电脑鼠标；官方页面提示手机横屏。源码 MIT，第三方依赖另有许可；本机 localStorage 存档，清数据可能丢失。离线、收费及账号要求未核实，页面脚本未执行，本次未试玩。",
+      "meta": [
+        "10–20 分钟 · 鼠标 / 手机横屏",
+        "源码 MIT · 本机存档",
+        "离线 / 账号未核实"
+      ],
+      "source": "https://github.com/particle-clicker/particle-clicker",
+      "playUrl": "https://particle-clicker.web.cern.ch/",
+      "playLabel": "官方页面在线玩 ↗"
+    },
+    {
+      "category": "浏览器游戏 / 光路解谜",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Mirror Maze：旋转镜子把光送到目标",
+      "summary": "建议 5–15 分钟：利用镜子、棱镜和滤色器调整光路及颜色。",
+      "why": "官网称免费、无账号、无广告，支持电脑鼠标和手机触控；离线是作者说明，未实测。本地成绩可能随浏览器数据清除而丢失。源码公开但采用 PolyForm Noncommercial 1.0.0，限制商业用途；未试玩。",
+      "meta": [
+        "5–15 分钟 · 鼠标 / 触摸",
+        "免费免账号 · 本地成绩",
+        "源码公开 · 限非商业"
+      ],
+      "source": "https://github.com/N0zz/komyo.online",
+      "playUrl": "https://komyo.online/games/mirror-maze/",
+      "playLabel": "官方页面在线玩 ↗"
+    },
+    {
+      "category": "浏览器游戏 / 物理路线解谜",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Kinetile：用跳台和传送门规划小球路线",
+      "summary": "建议 10–20 分钟：拖放箭头、跳台与传送门，让小球通过障碍。",
+      "why": "作者网页试玩免费但目前仅前 14 关；完整游戏和售价尚未确认。支持桌面 Chrome、Brave、Firefox 的鼠标或手柄，手机浏览器不支持；进度在浏览器，清数据可能丢失。账号、离线、源码许可未核实，未试玩。",
+      "meta": [
+        "10–20 分钟 · 桌面鼠标 / 手柄",
+        "免费试玩前 14 关",
+        "手机不支持 · 完整售价待定"
+      ],
+      "source": "https://sochalewski.itch.io/kinetile",
+      "playUrl": "https://sochalewski.itch.io/kinetile",
+      "playLabel": "作者页面在线玩 ↗"
+    }
+  ],
+  "deepDive": {
+    "title": "SeedVR2 本地超分：时间分块与显存怎样权衡",
+    "text": "stable-diffusion.cpp 新增 SeedVR2 3B / 7B 的实验性超分，支持单张图像及有序视频帧。需要匹配的模型和 VAE，不需要文本编码器；对视频使用时间分块，较大块可能需要更多显存，块边界也可能可见。作者报告 3B 测过 CUDA 与 CPU、7B 只测 CUDA 小输入；1728×960 输出、5 帧块曾超过 24GB 显存。这些是复现提示而非显存上限或速度承诺。先核对权重许可和官方命令，用短片及较小分块比较边界与细节，再按显存情况逐步调整；输出不保留音轨，需另行处理。本机未测试。",
+    "source": "https://github.com/leejet/stable-diffusion.cpp/pull/2300"
+  },
+  "noise": "判断而非事实：量化编码器从 10.8 GiB 降到 4.8 GiB 不代表完整视频模型能在 4.8 GiB 显存运行；模型主体、VAE、缓存和中间张量均需另外预算，画质也要自己比较。"
+},
+  {
   "date": "2026-11-08",
   "label": "NOV 08",
   "pulse": "今天的信号集中在视频工作流的内存使用、开源 HDL 仿真正确性，以及可追溯的机器人仿真到实机数据。9 条技术信号、4 项趣味发现；具身项目不计入本地工具数。",
