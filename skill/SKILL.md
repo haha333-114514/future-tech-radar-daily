@@ -10,5 +10,5 @@ description: 按用户关注方向研究 GitHub 与开发者动态，生成中�
 - 日期默认使用运行时 Asia/Shanghai 的当天；用户明确指定日期时按该日期补报，研究当时可核验的信息，注明回溯，不能把事后新进展包装成当时消息。若该日已存在，更新同一条记录，不重复添加。
 - 先检查 E:\VHDL\future-tech-dashboard 的现状、既有日报和未提交工作，尊重并保留历史及用户修改；阅读当前 Sites skill 并通过其受支持流程打开、验证、打包和发布同一站点，复用 .openai/hosting.json，不改变访问范围。凭证仅放入会话内存，不输出或存盘。
 - 先按规格研究与核验，再维护 dist/reports.js，保留旧设计与全部历史；完成日期、周/月/年视图、分类、搜索、汇总和脚本检查。以成功部署结果作为发布成功证据；如无法发布或验证，准确说明完成部分及阻碍，不声称已发布。
-- 每次运行完成本地核验并尝试发布网站后，执行 `node C:\Users\henry\.codex\skills\developer-trends-daily\scripts\sync-github.mjs`，把网站、全部日报和本技能同步到用户授权的私有仓库 [future-tech-radar-daily](https://github.com/haha333-114514/future-tech-radar-daily)。即使网站发布失败，也尝试同步已核验的本地内容，并分别报告网站和 GitHub 的结果。脚本使用现有 Git 登录，不提交站点托管配置或凭据；同步失败时保留本地内容，如实说明，不能声称同步成功。
+- 每次运行完成本地核验并尝试发布网站后，执行 `node C:\Users\henry\.codex\skills\developer-trends-daily\scripts\sync-github.mjs`，把网站、全部日报和本技能同步到用户授权的公开仓库 [future-tech-radar-daily](https://github.com/haha333-114514/future-tech-radar-daily)。即使网站发布失败，也尝试同步已核验的本地内容，并分别报告网站和 GitHub 的结果。脚本使用现有 Git 登录，不提交站点托管配置或凭据；同步失败时保留本地内容，如实说明，不能声称同步成功。
 - 用户显式指令优先于本技能。执行定时任务时，完成并确认部署后发送简短摘要与网站链接；出错时如实报告。

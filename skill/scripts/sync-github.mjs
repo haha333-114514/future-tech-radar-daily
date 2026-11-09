@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-// Keep Sites' source checkout separate from this private GitHub mirror.
+// Keep Sites' source checkout separate from the GitHub mirror.
 const siteDir = 'E:/VHDL/future-tech-dashboard';
 const mirrorDir = 'E:/VHDL/future-tech-radar-github';
 const skillDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -26,7 +26,7 @@ function git(args, options = {}) {
   return result;
 }
 
-async function verifyPrivateRepository() {
+async function verifyRepository() {
   const result = git(['credential', 'fill'], {
     cwd: siteDir,
     input: 'protocol=https\nhost=github.com\n\n',
@@ -46,8 +46,8 @@ async function verifyPrivateRepository() {
   });
   if (!response.ok) throw new Error(`无法确认 GitHub 仓库权限（HTTP ${response.status}）。`);
   const repo = await response.json();
-  if (repo.full_name !== repoName || repo.private !== true || !repo.default_branch) {
-    throw new Error('目标仓库不存在、不是预期仓库或已不是私有仓库，停止同步。');
+  if (repo.full_name !== repoName || repo.private !== false || !repo.default_branch) {
+    throw new Error('目标仓库不存在、不是预期仓库或不是公开仓库，停止同步。');
   }
   return repo.default_branch;
 }
@@ -95,7 +95,7 @@ function render(target, reports) {
   const readme = path.join(target, 'README.md');
   const existing = fs.existsSync(readme) ? fs.readFileSync(readme, 'utf8').trim() : '';
   if (!existing || existing === '# future-tech-radar-daily') {
-    fs.writeFileSync(readme, '# 未来科技雷达 · 开发者趋势日报\n\n个人私有仓库，保存 [未来科技仪表盘](https://future-tech-radar-daily.jdh020684.chatgpt.site/)及每日研究记录。\n\n- `reports/`：按日期保存的中文日报，可直接阅读。\n- `dist/`：网站静态文件与全部历史数据。\n- `skill/`：本机日报技能及其同步脚本的备份。\n\n日报和网站文件由本机技能生成；每次运行同步到此仓库。站点托管配置和登录凭据不会同步。\n', 'utf8');
+    fs.writeFileSync(readme, '# 未来科技雷达 · 开发者趋势日报\n\n个人公开仓库，保存 [未来科技仪表盘](https://future-tech-radar-daily.jdh020684.chatgpt.site/)及每日研究记录。\n\n- `reports/`：按日期保存的中文日报，可直接阅读。\n- `dist/`：网站静态文件与全部历史数据。\n- `skill/`：本机日报技能及其同步脚本的备份。\n\n日报和网站文件由本机技能生成；每次运行同步到此仓库。站点托管配置和登录凭据不会同步。\n', 'utf8');
   }
 }
 
@@ -110,7 +110,7 @@ async function main() {
     return;
   }
   if (process.argv.length !== 2) throw new Error('不支持的参数。');
-  const branch = await verifyPrivateRepository();
+  const branch = await verifyRepository();
   if (!fs.existsSync(path.join(mirrorDir, '.git'))) {
     if (fs.existsSync(mirrorDir) && fs.readdirSync(mirrorDir).length) throw new Error('同步目录已存在且不是仓库，未修改现有文件。');
     git(['clone', '--', remoteUrl, mirrorDir], { cwd: siteDir });
@@ -138,7 +138,7 @@ async function main() {
   const local = git(['rev-parse', 'HEAD']).stdout.trim();
   const remote = git(['ls-remote', 'origin', `refs/heads/${branch}`]).stdout.trim().split(/\s+/)[0];
   if (local !== remote) throw new Error('远程版本与本地不一致，请检查 GitHub 推送结果。');
-  console.log(`GitHub 私有仓库已同步：${repoName}，${reports.length} 期，最新 ${reports[0].date}，提交 ${local.slice(0, 12)}。`);
+  console.log(`GitHub 公开仓库已同步：${repoName}，${reports.length} 期，最新 ${reports[0].date}，提交 ${local.slice(0, 12)}。`);
 }
 
 main().catch(error => { console.error(`GitHub 同步失败：${error.message}`); process.exitCode = 1; });
