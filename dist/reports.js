@@ -1,5 +1,204 @@
 window.DAILY_REPORTS = [
   {
+  "date": "2026-11-10",
+  "label": "NOV 10",
+  "pulse": "今日关注 3D 纹理工作流、开源 HDL 工具正确性和机器人仿真效率：9 条技术信号、3 项趣味发现；仿真研究不计入本地工具数。",
+  "metrics": [
+    {
+      "value": "12",
+      "label": "今日条目"
+    },
+    {
+      "value": "8",
+      "label": "本地可部署"
+    },
+    {
+      "value": "1",
+      "label": "具身进展"
+    },
+    {
+      "value": "3",
+      "label": "FPGA / EDA"
+    }
+  ],
+  "items": [
+    {
+      "category": "图像生成 / 3D 纹理烘焙",
+      "level": "NOV 10 MAIN · 北京时间",
+      "title": "ComfyUI 接入 UltraTex 多视图纹理工作流",
+      "summary": "07:55 合入：根据参考图、已有网格和多视图生成纹理并投射回 UV。",
+      "why": "适合制作 3D 素材的人；这是原有 UltraTex 模型的新节点支持，并非新模型。PR 没有本地显存或耗时数据，原论文 H200 数据不能推断普通显卡能运行。项目代码 MIT，FLUX.2-klein-base-9B 底座为非商业许可；Comfy 权重下载可用性未核实，本机未运行。",
+      "meta": [
+        "已有网格 / 多视图 / UV",
+        "底座有非商业许可",
+        "无本地显存实测"
+      ],
+      "source": "https://github.com/Comfy-Org/ComfyUI/pull/17636",
+      "playUrl": "https://github.com/yiboz2001/UltraTex",
+      "playLabel": "原项目说明 ↗"
+    },
+    {
+      "category": "视觉理解 / 检测与分割",
+      "level": "NOV 10 MAIN · 北京时间",
+      "title": "ComfyUI 接入 WeVisOne-VL 检测与分割节点",
+      "summary": "04:17 合入 2B / 4B 视觉模型节点，可按文本指定检测框、mask 与关键点。",
+      "why": "适合作为图像生成工作流前处理；这是已有模型的节点集成，不是新模型发布。腾讯原始 4B 模型卡标 Apache-2.0，对遮挡、透明物体和提示敏感；该路径只支持单轮图片，PR 没有显存或速度测试，Comfy 权重下载未核实。",
+      "meta": [
+        "检测 / 分割 / 关键点",
+        "单轮图片 · 遮挡与透明物体受限",
+        "原始模型 Apache-2.0"
+      ],
+      "source": "https://github.com/Comfy-Org/ComfyUI/pull/17632",
+      "playUrl": "https://huggingface.co/tencent/WeVisOne-VL-4B",
+      "playLabel": "原始模型卡 ↗"
+    },
+    {
+      "category": "FPGA / ECP5 综合正确性",
+      "level": "NOV 10 MAIN · 北京时间",
+      "title": "Yosys 修复 abc9 未连接输入的错误常量",
+      "summary": "03:18 合入：调整 box 模块未驱动输入的处理，避免错误引入常量 0。",
+      "why": "原复现使用 Linux、OSS CAD Suite 与 Lattice ECP5-85K CABGA381，synth_ecp5 后在 nextpnr 遇到触发器打包内部检查失败；新 PR 添加较小 whitebox 回归。ISC 代码，未提供实板时序、资源或本机验证。",
+      "meta": [
+        "ECP5-85K · abc9",
+        "未驱动输入 / 综合正确性",
+        "最小回归 · 非上板验证"
+      ],
+      "source": "https://github.com/YosysHQ/yosys/pull/6473",
+      "playUrl": "https://github.com/YosysHQ/yosys/issues/6466",
+      "playLabel": "器件与原始复现 ↗"
+    },
+    {
+      "category": "FPGA / Windows DPI 构建",
+      "level": "NOV 10 MAIN · 北京时间",
+      "title": "Verilator 修复 Windows DPI 的导入导出声明",
+      "summary": "07:08 合入，修正 SystemVerilog DPI 函数被错误标记为 dllimport。",
+      "why": "作者在 MSVC 14.44 /W3 和 clang 23 对单个生成文件测试，相关诊断由 72 条减少 66 条；这是接口构建修复，不是完整工程验证或 FPGA 上板结果。LGPL-3.0 / Artistic-2.0，主干需自行构建。",
+      "meta": [
+        "Windows / SystemVerilog DPI",
+        "单文件编译测试",
+        "非完整工程或上板"
+      ],
+      "source": "https://github.com/verilator/verilator/pull/9104"
+    },
+    {
+      "category": "FPGA / Gowin PLL 约束",
+      "level": "NOV 10 MAIN · 北京时间",
+      "title": "Apycula 修复静态 PLL 范围检查被跳过",
+      "summary": "03:53 合入：修正字符串 FALSE 被视为真值，恢复静态 CLKOUT、PFD 和 VCO 范围检查。",
+      "why": "作者运行 13 个示例，包括 Tang Nano 9K / 20K / 4K；9K 的非法分频例此前可打包，现在会报 VCO 超范围。动态分频仍跳过静态检查，未实板测试；Tang Console 60K 的数据库 CI 问题在基线已存在。这是继 11 月 6 日 GW5AT-60B 支持后的不同正确性修复。",
+      "meta": [
+        "Gowin PLL / Tang Nano",
+        "13 个示例 · 静态范围校验",
+        "动态分频未覆盖 · 未实板"
+      ],
+      "source": "https://github.com/YosysHQ/apicula/pull/589"
+    },
+    {
+      "category": "具身智能 / 物理仿真吞吐",
+      "level": "NOV 10 MAIN · 北京时间",
+      "title": "Isaac Lab 将部分动作处理纳入 Newton 物理步",
+      "summary": "12:07 合入：符合 CUDA 图捕获条件时减少仿真逐步调用。",
+      "why": "作者使用 RTX PRO 6000 Blackwell、4096 环境、1000 步，Franka reach 约 1.051M→1.078M 步/秒；这是仿真基准，不是实体机械臂表现。不可捕获动作或部分传感器更新条件下回退；Kit 专属测试未本地运行。代码 BSD-3-Clause，资产及依赖另核，无新权重或实机验证。",
+      "meta": [
+        "Newton / Franka reach 仿真",
+        "RTX PRO 6000 · 4096 环境",
+        "特定条件回退 · 无实机"
+      ],
+      "source": "https://github.com/isaac-sim/IsaacLab/pull/8928"
+    },
+    {
+      "category": "LLM 推理服务 / FP16 专家缩放",
+      "level": "NOV 10 MAIN · 北京时间",
+      "title": "vLLM 修复部分 FP16 MoE 的专家输出缩放",
+      "summary": "11:58 合入：将只适合某些模型的共享专家缩放改为按模型启用。",
+      "why": "作者称旧逻辑可能让 FP16 GLM-4.7 输出退化，修复不改变 BF16 / FP32 及其他限定路径。作者提供 CPU 单元测试及 GPU CI 覆盖；代码 Apache-2.0、模型许可另核，主干不代表当前发行版已修复。",
+      "meta": [
+        "FP16 / MoE 专家缩放",
+        "BF16 / FP32 路径未变",
+        "主干 · 核对具体版本"
+      ],
+      "source": "https://github.com/vllm-project/vllm/pull/65842"
+    },
+    {
+      "category": "编码 Agent / 中断恢复",
+      "level": "NOV 10 MAIN · 北京时间",
+      "title": "Codex 处理恢复历史中尚未完成的工具调用",
+      "summary": "12:11 合入：分叉或恢复会话时，将历史中缺失结果的调用标识为中断。",
+      "why": "作者增加带待处理 apply_patch 的分叉回归测试；这改善恢复记录的处理，不代表中断操作一定没有产生任何文件变更。主干更新，与昨日云会话消息去重是不同进展；需核对本地版本。",
+      "meta": [
+        "会话恢复 / 工具调用",
+        "历史缺失结果标记中断",
+        "实际文件状态仍需检查"
+      ],
+      "source": "https://github.com/openai/codex/pull/60519"
+    },
+    {
+      "category": "编码 Agent / 沙箱启动",
+      "level": "NOV 10 MAIN · 北京时间",
+      "title": "Codex 将沙箱 CLI 接入共享沙箱管理器",
+      "summary": "12:01 合入，统一准备权限配置、工作区根目录和受管理网络代理。",
+      "why": "作者增加 macOS 网络代理及 Linux 路径测试，Windows 原生令牌沙箱要求会话启动器。适合关注编码工具隔离的人；并非安全审计或所有环境的隔离保证，主干需核对安装版本。",
+      "meta": [
+        "沙箱 / 工作区权限",
+        "网络代理与路径测试",
+        "非全面安全审计"
+      ],
+      "source": "https://github.com/openai/codex/pull/60517"
+    },
+    {
+      "category": "浏览器游戏 / 双人平台解谜",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Antipodes：上下两个世界互相帮忙",
+      "summary": "建议 10–20 分钟：操控地面上下的伙伴，使用压力板、绳索和箱子过关。",
+      "why": "作者页称免费，支持单人或两人同键盘，也可手机触控；源码许可、离线、账号与存档方式未核实。未实际试玩。",
+      "meta": [
+        "10–20 分钟 · 键盘 / 触控",
+        "免费 · 单人或双人",
+        "离线 / 许可未核实"
+      ],
+      "source": "https://erandel.com/antipodes",
+      "playUrl": "https://erandel.itch.io/antipodes",
+      "playLabel": "作者网页入口 ↗"
+    },
+    {
+      "category": "物理解谜 / 颗粒分拣",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Kornwerk：画滑槽把不同颗粒送到矿车",
+      "summary": "建议 10–15 分钟：搭滑槽、传送带和筛网，分拣沙、碎石和金粒。",
+      "why": "作者提供 15 关免费早期原型和每日谜题，支持桌面鼠标或手机触摸；账号、离线、存档和源码许可未核实。本次未试玩。",
+      "meta": [
+        "10–15 分钟 · 鼠标 / 触摸",
+        "免费早期原型 · 15 关",
+        "源码 / 离线未核实"
+      ],
+      "source": "https://mydani-games.itch.io/kornwerk",
+      "playUrl": "https://mydani-games.itch.io/kornwerk",
+      "playLabel": "作者试玩页 ↗"
+    },
+    {
+      "category": "浏览器游戏 / 港口经营",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Copper Harbor：给船只安排泊位与货物",
+      "summary": "建议 10–20 分钟：安排靠泊、仓储和加工，在期限内完成合约。",
+      "why": "官网称免费免注册，桌面鼠标；手机可横屏点按但文字较小。进度存在浏览器，清理数据可能丢失；离线与源码许可未核实，未实际试玩。",
+      "meta": [
+        "10–20 分钟 · 桌面鼠标",
+        "免费免注册 · 手机横屏",
+        "本机存档 · 离线未核实"
+      ],
+      "source": "https://fahagames.com/games/copper-harbor/",
+      "playUrl": "https://fahagames.com/games/copper-harbor/",
+      "playLabel": "官方游戏页 ↗"
+    }
+  ],
+  "deepDive": {
+    "title": "abc9 中未连接输入为什么影响 FPGA 综合",
+    "text": "Yosys 此次修复针对 abc9 / abc_new 处理 box 模块时未驱动输入被错误引入常量 0 的情况。原始复现是一段两级异步复位同步器，使用 ECP5-85K CABGA381、Linux 和 OSS CAD Suite；synth_ecp5 后 nextpnr 的 FF packing 内部检查失败。新改动让 techmap 清理未驱动输入，并附较小 whitebox 回归。建议先使用原 issue 的最小 Verilog 与工具版本重现，再对比修复后综合日志和 nextpnr 结果；不要把软件回归通过当作板级时序收敛或资源改进。本机未综合或烧板。",
+    "source": "https://github.com/YosysHQ/yosys/pull/6473"
+  },
+  "noise": "判断而非事实：某个宽位运算微基准达到数倍加速，并不代表整套 RTL 仿真同样提速；位宽、X/Z 分布和其他仿真开销都影响结果。"
+},
+  {
   "date": "2026-11-09",
   "label": "NOV 09",
   "pulse": "今天关注点是 SeedVR2 新的本地运行路径、Wan 文本编码器量化，以及 VHDL 验证与机器人仿真正确性。8 条技术信号、3 项趣味发现；机器人仿真不计入本地工具数。",
