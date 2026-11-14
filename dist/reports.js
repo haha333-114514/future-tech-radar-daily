@@ -1,5 +1,215 @@
 window.DAILY_REPORTS = [
   {
+  "date": "2026-11-14",
+  "label": "NOV 14",
+  "pulse": "暂停后今日恢复：关注图像推理、Gowin 位流反解和机器人仿真；10 条技术信号、3 项趣味发现。11 月 11–13 日按约定未补报，近期进展标明日期。",
+  "metrics": [
+    {
+      "value": "13",
+      "label": "今日条目"
+    },
+    {
+      "value": "8",
+      "label": "本地可部署"
+    },
+    {
+      "value": "2",
+      "label": "具身进展"
+    },
+    {
+      "value": "2",
+      "label": "FPGA / EDA"
+    }
+  ],
+  "items": [
+    {
+      "category": "图像生成 / CUDA 注意力优化",
+      "level": "NOV 14 MAIN · 北京时间",
+      "title": "stable-diffusion.cpp 优化 MOSS-Image CUDA 推理",
+      "summary": "02:16 合入注意力、缓存和 INT8 相关优化。",
+      "why": "作者 Windows / RTX 4090 24GB、1024²、20 步、CPU offload 的单提示词五次交替测试中，采样 2.31→2.84 it/s；不等于完整生成耗时减少同等比例。没有峰值显存或其他 GPU 数据；代码 MIT，原始 MOSS SFT 权重 Apache-2.0，量化及编码器许可另核。",
+      "meta": [
+        "RTX 4090 · INT8 ConvRot",
+        "采样 2.31→2.84 it/s",
+        "非完整出图速度"
+      ],
+      "source": "https://github.com/leejet/stable-diffusion.cpp/pull/2346"
+    },
+    {
+      "category": "图像生成 / GGUF 视觉条件",
+      "level": "NOV 14 MAIN · 北京时间",
+      "title": "InvokeAI 为 Krea-2 GGUF 编码器增加参考图支持",
+      "summary": "09:12 合入：量化 Qwen3-VL 4B 编码器可结合匹配视觉塔处理姿态、深度等编辑参考图。",
+      "why": "需要单独约 0.8GB 的 4B mmproj，且视觉塔和编码器在同一设备。作者 RTX 4090、1024²、10 步、OpenPose 三个种子约 20 秒/张；AMD 仅做有限兼容测试。Krea 2 Community License，量化文件另核；主干未本机复现。",
+      "meta": [
+        "GGUF / OpenPose 参考图",
+        "视觉塔约 0.8 GB · 同设备",
+        "4090 单例 · 许可另核"
+      ],
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/10244"
+    },
+    {
+      "category": "视频超分 / 静帧复用",
+      "level": "NOV 13 MAIN · 非今日发布",
+      "title": "AnimeJaNai 离线编码支持近似静帧复用",
+      "summary": "11 月 13 日合入静帧检测及 Windows DirectML 支持，在近似静止画面复用上一帧超分结果。",
+      "why": "作者 RTX 5090 推理受限样例快 24–31%，编码器成为瓶颈时无明显变化；Intel UHD 770 两段测试快 12% / 26%。缓慢运动或轻微变化可能误复用，RIFE 与时序超分链跳过；这不是实时播放器更新，代码和模型许可需核查。",
+      "meta": [
+        "离线编码 / Windows DirectML",
+        "特定样例加速 · 非逐帧保证",
+        "缓慢运动可能误复用"
+      ],
+      "source": "https://github.com/the-database/animejanai-inference/pull/76",
+      "playUrl": "https://github.com/the-database/animejanai-inference/pull/77",
+      "playLabel": "DirectML 后续 ↗"
+    },
+    {
+      "category": "FPGA / Verilator 线程调度",
+      "level": "NOV 14 MAIN · 北京时间",
+      "title": "Verilator 修正多线程任务成本估算",
+      "summary": "03:22 合入：调整仿真线程调度中的任务成本估算。",
+      "why": "作者在 XiangShan、8 线程 cmark 测试中报告五次中位 1.27→2.26 kHz；CPU 型号未注明，单线程和其他所测核心无变化。仅为特定仿真基准，不是 FPGA 实板频率；主干代码、本机未运行。",
+      "meta": [
+        "XiangShan / 8 线程",
+        "特定仿真基准 1.27→2.26 kHz",
+        "CPU 型号未注明"
+      ],
+      "source": "https://github.com/verilator/verilator/pull/9145"
+    },
+    {
+      "category": "FPGA / Gowin 位流反解",
+      "level": "NOV 12 MAIN · 非今日发布",
+      "title": "Apycula 修复 Gowin 进位链位流反解",
+      "summary": "11 月 12 日 04:12 合入 RAW_ALU_LUT 等进位链的反解修正。",
+      "why": "作者比较 GW1N-9C 和 GW2A-18C 的 50 份随机设计位流，最小例经 Yosys SAT 验证；GW5A 未测，其他连线反解问题仍存在。影响 gowin_unpack 生成的网表，不说明原位流或板卡输出出错；MIT 主干，未实板验证。",
+      "meta": [
+        "GW1N-9C / GW2A-18C",
+        "50 份位流 · 最小例 SAT",
+        "GW5A 未测 · 连线缺口仍在"
+      ],
+      "source": "https://github.com/YosysHQ/apicula/pull/595"
+    },
+    {
+      "category": "具身智能 / 视频动作策略",
+      "level": "NOV 11 MAIN · 非今日发布",
+      "title": "LeRobot 接入 Praxis-1 策略调用",
+      "summary": "11 月 11 日 22:56 合入已有视频—动作模型的新适配路径，提供 DROID、YAM 与基础检查点。",
+      "why": "作者在 MuJoCo droid_guard 仿真报告 54/56，不能当成新实机结果；PR 列单卡推理约需 80 GB 显存、DROID 权重约 54 GB，全量微调至少 4×80 GB。Mac 小模型测试 101 通过、6 跳过，全套未跑；代码与各权重、数据许可需分别核对。",
+      "meta": [
+        "MuJoCo 仿真 54/56",
+        "单卡推理约 80 GB 显存",
+        "无新增实机验证"
+      ],
+      "source": "https://github.com/huggingface/lerobot/pull/5321"
+    },
+    {
+      "category": "具身智能 / CPU 物理仿真",
+      "level": "NOV 11 MAIN · 非今日发布",
+      "title": "Isaac Lab 增加 Newton 的 CPU 物理步捕获",
+      "summary": "11 月 11 日 20:50 合入，针对可捕获 CPU 物理步骤减少执行开销。",
+      "why": "作者 i9-14900K、Linux、单环境 Cartpole 的单次零动作测试 4.18→0.33 ms；4096 环境 19.6→16.5 ms。部分求解器不支持 CPU 捕获，Torch 或 host 回调可能只执行一次；属于仿真单例，不是实机或视觉全链路加速。与 11 月 10 日 CUDA 捕获优化是不同路径。",
+      "meta": [
+        "i9-14900K / CPU 仿真",
+        "单环境 4.18→0.33 ms",
+        "回调与求解器有限制"
+      ],
+      "source": "https://github.com/isaac-sim/IsaacLab/pull/8959",
+      "playUrl": "https://github.com/isaac-sim/IsaacLab/pull/9013",
+      "playLabel": "CPU 捕获后续修复 ↗"
+    },
+    {
+      "category": "多模态推理服务 / 缓存键隔离",
+      "level": "NOV 14 MAIN · 北京时间",
+      "title": "vLLM 区分调用方 UUID 与内容摘要缓存键",
+      "summary": "04:06 合入：为两类键添加不同前缀，防止它们意外或恶意碰撞。",
+      "why": "作者说明旧逻辑中可预测的内容摘要可能被调用方 UUID 冒充，影响后续多模态缓存；新增相关回归，原始处理输出不因前缀而改变。适合部署多用户视觉模型服务的开发者；该主干修复不代表全部缓存或权限问题均已解决，需核对部署版本。",
+      "meta": [
+        "多模态处理 / 编码器缓存",
+        "内容键与 UUID 分域",
+        "主干 · 多用户服务"
+      ],
+      "source": "https://github.com/vllm-project/vllm/pull/66473"
+    },
+    {
+      "category": "本地 LLM 工具调用 / JSON Schema",
+      "level": "NOV 14 MAIN · 北京时间",
+      "title": "Ollama 保留工具参数中更多 JSON Schema 字段",
+      "summary": "08:00 合入：保留此前结构体未建模的参数字段，例如 default 和 minimum。",
+      "why": "适合构建本地工具调用或代理服务的人；新增读写逻辑让字段经过服务端转发时不再被静默丢弃。保留字段不保证模型一定遵守约束；主干更新，需查看发行版本及所用模型支持。",
+      "meta": [
+        "Ollama / 工具调用",
+        "保留额外 JSON Schema 字段",
+        "不保证模型遵循约束"
+      ],
+      "source": "https://github.com/ollama/ollama/pull/19686"
+    },
+    {
+      "category": "编码 Agent / MCP 工作区隔离",
+      "level": "NOV 14 MAIN · 北京时间",
+      "title": "Codex 为共享 MCP 服务增加进程局部启动目录",
+      "summary": "09:55 合入：在指定功能开启时，为本地 MCP 服务配置进程局部启动目录。",
+      "why": "直接 MCP 工具调用使用线程对应的沙箱状态，并移除调用方伪造的相关元数据；作者加入功能开关、可执行文件匹配及沙箱目录回归。仅支持相关条件和具备对应能力的服务，不能视为通用安全审计；需核对本地版本。",
+      "meta": [
+        "MCP / 工作区启动目录",
+        "线程沙箱状态",
+        "主干 · 功能条件适用"
+      ],
+      "source": "https://github.com/openai/codex/pull/61444"
+    },
+    {
+      "category": "平台解谜 / 多角色协作",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Out of Context：让前一个小角色成为下一位的台阶",
+      "summary": "建议 10–20 分钟：每个角色有 20 秒，时间结束后身体留下，可以作为台阶或压住按钮。",
+      "why": "作者提供免费浏览器试玩，含前两章 14 关，电脑键盘或手机触控；作者称试玩无需账号，iOS 完整版另行付费。离线、存档和源码许可未核实；未实际试玩。",
+      "meta": [
+        "10–20 分钟 · 键盘 / 触屏",
+        "免费试玩 14 关",
+        "完整版另付费 · 许可未核"
+      ],
+      "source": "https://pequn.itch.io/out-of-context",
+      "playUrl": "https://pequn.itch.io/out-of-context",
+      "playLabel": "作者试玩页 ↗"
+    },
+    {
+      "category": "城市建造 / 自动生长沙盒",
+      "level": "趣味发现 · 非今日发布",
+      "title": "AFK City：看城市自己生长，也能手动规划",
+      "summary": "建议 10–20 分钟：划住宅、商业、工业和公园，观察城市、交通和昼夜变化。",
+      "why": "官网称免费、无账号、无广告或内购；电脑与手机需 WebGL2。存档在浏览器，清除站点数据可能丢失；使用 Google Analytics，源码许可和离线未核实。本次未试玩。",
+      "meta": [
+        "10–20 分钟 · 电脑 / 手机",
+        "免费免账号 · WebGL2",
+        "本机存档 · 离线未核"
+      ],
+      "source": "https://afkcity.com/privacy.html",
+      "playUrl": "https://afkcity.com/",
+      "playLabel": "官方网页 ↗"
+    },
+    {
+      "category": "浏览器游戏 / 七键音乐节奏",
+      "level": "趣味发现 · 非今日发布",
+      "title": "Bemuse：用键盘跟着音乐敲节拍",
+      "summary": "建议 5–15 分钟：玩在线 BMS 谱面，也可拖入自己拥有的曲包。",
+      "why": "项目推荐桌面 Chrome 与键盘；主程序 AGPL-3.0，子项目和曲目许可分别核对。在线曲库需联网，手机、账号、离线及存档未核实；未实际试玩。",
+      "meta": [
+        "5–15 分钟 · 桌面键盘",
+        "主程序 AGPL-3.0",
+        "曲目许可另核 · 在线曲库联网"
+      ],
+      "source": "https://github.com/bemusic/bemuse",
+      "playUrl": "https://bemuse.ninja/",
+      "playLabel": "官方游戏页 ↗"
+    }
+  ],
+  "deepDive": {
+    "title": "多模态缓存为什么要区分内容摘要和用户标识",
+    "text": "vLLM 的多模态处理与编码器缓存原先把内容摘要和调用方指定的 UUID 放在相同字符串空间。如果调用方能预测目标内容摘要并将其当作 UUID，可能让不同请求共享错误的缓存键。此次修复给两类来源分别加上前缀，保持下游把键当作不透明字符串的设计，并新增回归。它针对特定缓存碰撞路径，不能推断所有多用户隔离问题已经解决；已部署服务应核对版本、访问边界和上游发布说明。本机未复现。",
+    "source": "https://github.com/vllm-project/vllm/pull/66473"
+  },
+  "noise": "判断而非事实：机器人策略在仿真闭环完成任务，不等于同样表现已在实体机器人验证；平台、传感器、显存、数据许可和真实成功率仍需分别核对。"
+},
+  {
   "date": "2026-11-10",
   "label": "NOV 10",
   "pulse": "今日关注 3D 纹理工作流、开源 HDL 工具正确性和机器人仿真效率：9 条技术信号、3 项趣味发现；仿真研究不计入本地工具数。",
