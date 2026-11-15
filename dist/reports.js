@@ -210,6 +210,218 @@ window.DAILY_REPORTS = [
   "noise": "判断而非事实：机器人策略在仿真闭环完成任务，不等于同样表现已在实体机器人验证；平台、传感器、显存、数据许可和真实成功率仍需分别核对。"
 },
   {
+  "date": "2026-11-13",
+  "label": "NOV 13",
+  "pulse": "回溯补报：机器人小型平台支持、视频超分及生成推理优化值得关注。",
+  "items": [
+    {
+      "category": "具身智能 / 机器人策略",
+      "level": "回溯补报 · 北京时间",
+      "title": "Praxis-1 增加 SO-100 / SO-101 支持",
+      "summary": "适配单或双摄像头与关节输入。",
+      "why": "适合机器人策略实验；权重需申请，NVFP4 专家权重及编码器约 23.5GB，不含激活。1425 项 CPU 假机器人测试通过，不代表真机成功率。",
+      "meta": [
+        "真机效果未验证",
+        "权重申请 / 显存门槛高"
+      ],
+      "source": "https://github.com/runwayml/praxis-1-oss/pull/22"
+    },
+    {
+      "category": "视频超分 / 静帧复用",
+      "level": "回溯补报 · 北京时间",
+      "title": "AnimeJaNai 静帧复用与 DirectML",
+      "summary": "离线视频处理中可复用近似静止帧的超分结果。",
+      "why": "RTX 5090 推理受限例子快 24–31%，Intel UHD 770 两个例子快 12% / 26%；缓慢运动可能误判，RIFE 与时序超分链不适用。许可另核。",
+      "meta": [
+        "Windows / DirectML",
+        "样例性能非普遍保证"
+      ],
+      "source": "https://github.com/the-database/animejanai-inference/pull/76"
+    },
+    {
+      "category": "视频生成 / INT8 加速",
+      "level": "回溯补报 · 北京时间",
+      "title": "Unsloth 融合旋转编码与量化矩阵计算",
+      "summary": "LTX 视频推理增加 INT8 融合路径。",
+      "why": "Colab L4 的特定 LTX-2.5 测试 59.6→56.0 秒；输出不逐位相同，其他视频模型尚无端到端验证，模型许可需另核。",
+      "meta": [
+        "L4 单例",
+        "需核对模型许可"
+      ],
+      "source": "https://github.com/unslothai/unsloth/pull/17680"
+    },
+    {
+      "category": "机器人仿真 / CPU 图捕获",
+      "level": "回溯补报 · 北京时间",
+      "title": "Isaac Lab 修复 CPU 图捕获执行",
+      "summary": "修正执行器目标写入，跟进 11 月 11 日 CPU 图捕获改动。",
+      "why": "适合大规模仿真开发；这是仿真计算修正，不能当作实体机器人效果。",
+      "meta": [
+        "仿真 · 非真机"
+      ],
+      "source": "https://github.com/isaac-sim/IsaacLab/pull/9013"
+    }
+  ],
+  "deepDive": {
+    "title": "Praxis-1 上小型机械臂：先核对权重和算力",
+    "text": "代码新增 SO-100/SO-101 输入适配，使低成本硬件成为可尝试的平台；但大模型权重、GPU 显存、摄像头配置与实体评估仍是门槛。建议先申请权重并运行假机器人测试，再核对电机、相机与安全限位后尝试真机。",
+    "source": "https://github.com/runwayml/praxis-1-oss/pull/22"
+  },
+  "noise": "判断：低成本机械臂支持不等于低成本端侧部署；硬件价格之外仍要计入 GPU 和采集成本。",
+  "metrics": [
+    {
+      "value": "4",
+      "label": "今日条目"
+    },
+    {
+      "value": "回溯",
+      "label": "资料性质"
+    }
+  ]
+},
+  {
+  "date": "2026-11-12",
+  "label": "NOV 12",
+  "pulse": "回溯补报：开源综合工具发版，同时图像和视频生成更关注内存占用。",
+  "items": [
+    {
+      "category": "FPGA / 开源综合",
+      "level": "回溯补报 · 北京时间",
+      "title": "Yosys v0.71 正式发布",
+      "summary": "综合工具发布新版本，包含 ECP5 abc9 与综合前端相关更新。",
+      "why": "适合 FPGA 工具链维护者；实验性 read_slang / Verific 目标与器件选项及插件兼容性需按自身流程验证。",
+      "meta": [
+        "开源综合 / ECP5",
+        "插件兼容性需检查"
+      ],
+      "source": "https://github.com/YosysHQ/yosys/releases/tag/v0.71"
+    },
+    {
+      "category": "视频生成 / 系统内存优化",
+      "level": "回溯补报 · 北京时间",
+      "title": "InvokeAI 修复 Wan 2.2 系统内存占用",
+      "summary": "Windows A14B INT8 实测降低了系统内存峰值。",
+      "why": "作者 832×480、17 帧、8 步特定测试工作集峰值 29.7→16.2GB，三个种子 SHA 一致；这是系统内存而非显存，Linux / ROCm 未测。",
+      "meta": [
+        "Windows / Wan 2.2 INT8",
+        "RAM 不是 VRAM"
+      ],
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/10192"
+    },
+    {
+      "category": "图像生成 / 本地推理",
+      "level": "回溯补报 · 北京时间",
+      "title": "stable-diffusion.cpp 使用较小 H3 编码器",
+      "summary": "实验性替换 H3-image 视觉语言文本编码器。",
+      "why": "作者比较约 18GB Q4 文件与约 5GB INT8 文件；Radeon 780M 特定 1024² 测试约 179 秒、参数内存 26.1GB，不能视为最低门槛。权重许可另核。",
+      "meta": [
+        "780M 单例",
+        "模型许可另核"
+      ],
+      "source": "https://github.com/leejet/stable-diffusion.cpp/pull/2337"
+    },
+    {
+      "category": "机器人遥操作 / Unitree G1",
+      "level": "回溯补报 · 北京时间",
+      "title": "LeRobot 修复 G1 遥操作输入",
+      "summary": "区分无线控制器与外骨骼输入并调整数据结构。",
+      "why": "适合 G1 遥操作开发；自动化测试使用部分 SDK 桩，不证明真实机器人完成任务；现有数据管线注意兼容。",
+      "meta": [
+        "Unitree G1",
+        "测试非真机验证"
+      ],
+      "source": "https://github.com/huggingface/lerobot/pull/4990"
+    },
+    {
+      "category": "图像生成 / DirectML 后端",
+      "level": "回溯补报 · 北京时间",
+      "title": "ComfyUI 主干移除 DirectML",
+      "summary": "维护者在主干移除过时 DirectML 后端。",
+      "why": "Windows AMD / Intel 用户升级或自行构建前应检查后端；此变化不代表所有 Windows 支持或已发布旧版本失效。",
+      "meta": [
+        "主干变化",
+        "现有版本不自动失效"
+      ],
+      "source": "https://github.com/Comfy-Org/ComfyUI/pull/17711"
+    }
+  ],
+  "deepDive": {
+    "title": "生成模型的系统内存与显存应分别看",
+    "text": "Wan 修复针对系统内存缓存，特定测试输出保持一致；它不等于 GPU 显存同比下降。建议用相同工作流、分辨率和种子比较工作集、显存、耗时与输出，再决定升级。",
+    "source": "https://github.com/invoke-ai/InvokeAI/pull/10192"
+  },
+  "noise": "判断：单个 GPU 的加速或内存数字不能直接推广到所有后端和模型。",
+  "metrics": [
+    {
+      "value": "5",
+      "label": "今日条目"
+    },
+    {
+      "value": "回溯",
+      "label": "资料性质"
+    }
+  ]
+},
+  {
+  "date": "2026-11-11",
+  "label": "NOV 11",
+  "pulse": "回溯补报：机器人策略接入、仿真执行和 FPGA 时序数据各有进展。",
+  "items": [
+    {
+      "category": "具身智能 / LeRobot 策略",
+      "level": "回溯补报 · 北京时间",
+      "title": "Praxis-1 接入 LeRobot",
+      "summary": "增加 Praxis-1 适配与 DROID / YAM 工作流。",
+      "why": "适合机器人训练研究；全量微调示例需要 4×80GB GPU，DROID 示例约 54GB，MuJoCo 测试是仿真而非实体结果。代码 Apache-2.0，权重及组件授权另核。",
+      "meta": [
+        "MuJoCo 仿真",
+        "权重受限 / 高算力"
+      ],
+      "source": "https://github.com/huggingface/lerobot/pull/5321"
+    },
+    {
+      "category": "FPGA / Gowin 时序解析",
+      "level": "回溯补报 · 北京时间",
+      "title": "Apicula 扩展 DSP 时序解析",
+      "summary": "补充六组 DSP 时序数据并与 Gowin 厂商 SDF 对照。",
+      "why": "适合开源 FPGA 工具链贡献者；nextpnr 尚未使用这些 DSP 组，GW5A 未包含，不能声称真实时序改善。",
+      "meta": [
+        "GW1N / GW2A",
+        "未给出实板时序"
+      ],
+      "source": "https://github.com/YosysHQ/apicula/pull/599"
+    },
+    {
+      "category": "机器人仿真 / CPU 图捕获",
+      "level": "回溯补报 · 北京时间",
+      "title": "Isaac Lab 增加 Newton CPU 图捕获",
+      "summary": "通过捕获计算图减少 CPU 仿真重复调度开销。",
+      "why": "作者 i9-14900K 的 Cartpole 单环境例子 4.18→0.33ms，4096 环境 19.6→16.5ms；部分求解器不支持，回调语义需留意。该数据只适用于仿真。",
+      "meta": [
+        "i9-14900K 特定样例",
+        "仿真 · 非真机"
+      ],
+      "source": "https://github.com/isaac-sim/IsaacLab/pull/8959"
+    }
+  ],
+  "deepDive": {
+    "title": "FPGA 时序数据从解析到可用还差一步",
+    "text": "DSP 延迟数据与厂商 SDF 一致是建立开源时序模型的一步，但解析器与布局布线工具之间仍需要集成，再用具体器件和设计验证。建议先复现数据生成和对照，不要把解析成功当作满足时序。",
+    "source": "https://github.com/YosysHQ/apicula/pull/599"
+  },
+  "noise": "判断：仿真基准加速并不自动意味着机器人的现实任务成功率提高。",
+  "metrics": [
+    {
+      "value": "3",
+      "label": "今日条目"
+    },
+    {
+      "value": "回溯",
+      "label": "资料性质"
+    }
+  ]
+},
+  {
   "date": "2026-11-10",
   "label": "NOV 10",
   "pulse": "今日关注 3D 纹理工作流、开源 HDL 工具正确性和机器人仿真效率：9 条技术信号、3 项趣味发现；仿真研究不计入本地工具数。",
