@@ -1,5 +1,67 @@
 window.DAILY_REPORTS = [
   {
+  "date": "2026-11-15",
+  "label": "NOV 15",
+  "pulse": "本地多模态图像编码更快，推理服务更重视异常请求和连接可靠性。",
+  "metrics": [
+    {
+      "value": "3",
+      "label": "今日条目"
+    },
+    {
+      "value": "3",
+      "label": "本地部署"
+    }
+  ],
+  "items": [
+    {
+      "category": "本地多模态 / SYCL 图像编码",
+      "level": "NOV 15 MAIN · 北京时间",
+      "title": "llama.cpp 优化 Intel SYCL 图像编码",
+      "summary": "oneDNN 注意力路径支持无掩码图像编码层，未融合时回退 TILE。",
+      "why": "作者 B70、Muse Glimmer Q6_K_L / Q8_0 mmproj 测试中，1521 token 热启动编码从 1669 降至 1095 毫秒；该结果仅适用于所测条件，CPU 对照误差并非零。代码 MIT，模型权重许可另核。",
+      "meta": [
+        "Intel B70 / SYCL",
+        "特定样例 1.52×",
+        "模型许可另核"
+      ],
+      "source": "https://github.com/ggml-org/llama.cpp/pull/32109"
+    },
+    {
+      "category": "本地 LLM 推理服务 / 容错",
+      "level": "NOV 15 MAIN · 北京时间",
+      "title": "llama-server 修复非法语法参数导致进程退出",
+      "summary": "无效 grammar_triggers 类型改为返回 HTTP 400。",
+      "why": "适合自行部署推理 API 的开发者；作者复现单个错误请求让服务 abort，并增加回归测试。需更新到包含该修复的构建，不应视为替代认证和输入防护。",
+      "meta": [
+        "API 容错",
+        "错误请求返回 400",
+        "需更新构建"
+      ],
+      "source": "https://github.com/ggml-org/llama.cpp/pull/31478"
+    },
+    {
+      "category": "本地 LLM 推理服务 / 连接复用",
+      "level": "NOV 15 MAIN · 北京时间",
+      "title": "llama-server 修复流式响应连接复用",
+      "summary": "修正最后一个流式块的成功标志，避免成功响应后误关连接。",
+      "why": "对高频调用本地推理服务有实际意义；这是连接生命周期修复，未提供吞吐基准，也不代表所有代理或客户端已验证。",
+      "meta": [
+        "流式响应 / HTTP",
+        "未提供吞吐基准",
+        "代码已合入"
+      ],
+      "source": "https://github.com/ggml-org/llama.cpp/pull/30492"
+    }
+  ],
+  "deepDive": {
+    "title": "把服务端稳定性纳入本地部署评测",
+    "text": "推理服务不仅要关注 tokens/s：非法请求应返回可处理的错误，流式连接应按协议复用。建议升级后在隔离环境重放异常输入及连续流式请求，分别观察 HTTP 状态、服务健康和连接行为；单项修复不能替代权限与网络隔离。",
+    "source": "https://github.com/ggml-org/llama.cpp/pull/31478"
+  },
+  "noise": "判断：单项图像编码基准加速不等于端到端多模态应用同幅提速，模型加载和文本生成可能仍是瓶颈。"
+},
+  {
   "date": "2026-11-14",
   "label": "NOV 14",
   "pulse": "暂停后今日恢复：关注图像推理、Gowin 位流反解和机器人仿真；10 条技术信号、3 项趣味发现。11 月 11–13 日按约定未补报，近期进展标明日期。",
