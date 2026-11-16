@@ -1,5 +1,67 @@
 window.DAILY_REPORTS = [
   {
+  "date": "2026-11-16",
+  "label": "NOV 16",
+  "pulse": "图像生成工具正在补齐放大精修与历史工作流的可复现性。",
+  "metrics": [
+    {
+      "value": "3",
+      "label": "今日条目"
+    },
+    {
+      "value": "3",
+      "label": "本地部署"
+    }
+  ],
+  "items": [
+    {
+      "category": "图像超分 / 生成式精修",
+      "level": "NOV 16 MAIN · 北京时间",
+      "title": "InvokeAI 放大组件支持 MOSS-Image",
+      "summary": "复用现有 MOSS 去噪和 FLUX.2 分块 VAE 完成放大精修。",
+      "why": "适合已有 MOSS 工作流的用户；需兼容模型、Qwen3.5 9B 编码器及 VAE，主干改动，显存门槛未公布。默认 30 步且放大分辨率执行；作者完成单次本地出图，未提供速度或画质对照。模型许可另核。",
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/10257",
+      "meta": [
+        "主干更新",
+        "编码器 9B / VAE",
+        "无显存数据"
+      ]
+    },
+    {
+      "category": "图像生成 / 工作流复现",
+      "level": "NOV 16 MAIN · 北京时间",
+      "title": "InvokeAI 记住 SD3 编码器选择",
+      "summary": "修复 Recall all / Remix 丢失 T5、CLIP-L、CLIP-G 自定义选择的问题。",
+      "why": "适合复现历史图像的用户；需已安装兼容编码器。作者 772 项针对性测试通过、浏览器使用模拟服务；SD3 推理未运行，不能声称完成实际生成验证。",
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/10228",
+      "meta": [
+        "SD3 / 元数据",
+        "模拟服务测试",
+        "SD3 推理未测"
+      ]
+    },
+    {
+      "category": "图像编辑 / 参考图",
+      "level": "NOV 16 MAIN · 北京时间",
+      "title": "InvokeAI 修复 FLUX Kontext 改名后参考图失效",
+      "summary": "模型重命名后继续按已安装模型绑定参考图。",
+      "why": "适合使用 Generate 或 Canvas 的 Kontext 用户；已有兼容模型是前提。作者用模拟目录验证重命名及保存重载，不能推断实测画质。",
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/10238",
+      "meta": [
+        "FLUX.1 Kontext",
+        "参考图兼容",
+        "浏览器模拟测试"
+      ]
+    }
+  ],
+  "deepDive": {
+    "title": "生成式放大需要留意计算成本",
+    "text": "MOSS 精修使用输入潜变量及分块 VAE，再在放大分辨率上进行去噪。分块 VAE 并不保证整个生成流程都低显存；CFG 大于 1 时每步涉及两次 Transformer 计算。建议固定输入和参数，先用较小尺寸对比耗时、峰值显存与细节，再调整步数。",
+    "source": "https://github.com/invoke-ai/InvokeAI/pull/10257"
+  },
+  "noise": "判断：软件支持某架构不代表它在所有消费级显卡上流畅；目前没有通用显存或速度测试。"
+},
+  {
   "date": "2026-11-15",
   "label": "NOV 15",
   "pulse": "本地多模态图像编码更快，推理服务更重视异常请求和连接可靠性。",
