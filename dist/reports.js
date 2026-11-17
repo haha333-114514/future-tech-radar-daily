@@ -1,5 +1,67 @@
 window.DAILY_REPORTS = [
   {
+  "date": "2026-11-17",
+  "label": "NOV 17",
+  "pulse": "图像工具继续降低量化模型接入和离线使用摩擦，AMD 显存估算也更贴近实测。",
+  "metrics": [
+    {
+      "value": "3",
+      "label": "今日条目"
+    },
+    {
+      "value": "3",
+      "label": "本地部署"
+    }
+  ],
+  "items": [
+    {
+      "category": "图像生成 / GGUF 量化",
+      "level": "NOV 17 MAIN · 北京时间",
+      "title": "InvokeAI 支持 SD 3.5 GGUF Transformer",
+      "summary": "支持 Medium、Large、Large Turbo 的 GGUF 主模型，线性层保持量化。",
+      "why": "适合本地图像生成；须另装 T5、CLIP-L、CLIP-G 和 VAE，支持匹配 SD3 LoRA；主干改动，显存需求及各量化文件和模型许可应分别核实。",
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/9972",
+      "meta": [
+        "GGUF Transformer",
+        "独立编码器 / VAE",
+        "许可及显存另核"
+      ]
+    },
+    {
+      "category": "图像生成 / ROCm 显存管理",
+      "level": "NOV 17 MAIN · 北京时间",
+      "title": "Qwen-Image-2.1 调整 AMD VAE 内存预留",
+      "summary": "根据不同设备、精度与分配器的测量修正解码工作内存估算。",
+      "why": "Linux W7900 的 1024² BF16 样本峰值 11.81 GiB，旧预留 8.4、新预留 12.86 GiB；更准确的预留有助于避免错误调度，不等于实际显存降低。",
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/10043",
+      "meta": [
+        "ROCm / W7900",
+        "1024² BF16 实测",
+        "预留不等于用量"
+      ]
+    },
+    {
+      "category": "图像修复 / 离线部署",
+      "level": "NOV 17 MAIN · 北京时间",
+      "title": "PatchMatch 升级以支持离线加载",
+      "summary": "InvokeAI 将 pypatchmatch 升至 2.2，原生库随平台 wheel 分发。",
+      "why": "Windows 旧版导入时访问 GitHub API，断网时可能丢失修补选项；新版加载不需联网或本机编译。适合离线工作站，需更新依赖并匹配系统架构；安装阶段仍需获取 wheel。",
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/10298",
+      "meta": [
+        "Windows / Linux / macOS",
+        "运行加载可离线",
+        "依赖须先安装"
+      ]
+    }
+  ],
+  "deepDive": {
+    "title": "GGUF 量化与完整工作流的显存预算",
+    "text": "GGUF 把 Transformer 权重保持打包形式，但 SD 3.5 仍需三种文本编码器及 VAE，LoRA 和反量化也有临时开销。应统计完整流程峰值显存，不要用单个 GGUF 文件大小作为总需求；先核对编码器、VAE 和权重授权再试小图。",
+    "source": "https://github.com/invoke-ai/InvokeAI/pull/9972"
+  },
+  "noise": "判断：量化权重体积缩小不等于整条图像生成流水线按同样比例节省显存。"
+},
+  {
   "date": "2026-11-16",
   "label": "NOV 16",
   "pulse": "图像生成工具正在补齐放大精修与历史工作流的可复现性。",
