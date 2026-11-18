@@ -1,5 +1,149 @@
 window.DAILY_REPORTS = [
   {
+    "date": "2026-11-18",
+    "label": "NOV 18",
+    "pulse": "今天关注仿真场景的交接与本地工具的实测边界。Isaac Lab 能把初始化环境导出为 USD，AMD 视频推理、Gowin 工具链测试与 YAM 控制器也有可核实的进展。研究截至北京时间 10:10，共 5 条技术更新与 3 项趣味发现。",
+    "metrics": [
+      {
+        "value": "8",
+        "label": "今日条目"
+      },
+      {
+        "value": "2",
+        "label": "本地可部署"
+      },
+      {
+        "value": "3",
+        "label": "具身进展"
+      },
+      {
+        "value": "1",
+        "label": "FPGA / EDA"
+      }
+    ],
+    "items": [
+      {
+        "category": "机器人仿真 / OpenUSD 场景导出",
+        "level": "NOV 18 MAIN · 08:28 北京时间",
+        "title": "Isaac Lab 可导出初始化后的单个仿真环境",
+        "summary": "把关节、惯量、接触材质等运行时状态写入 USD，可用 Newton、PhysX 或 OVPhysX 各自的导入路径重建场景。",
+        "why": "适合把训练环境交给独立仿真进程的开发者。导出发生在启动随机化之前，依赖所用后端和 USD 资源。Newton 短时回放对照仍显示碰撞设置等差异，未涉及真机。",
+        "source": "https://github.com/isaac-sim/IsaacLab/pull/8568",
+        "meta": [
+          "主干已合入",
+          "单环境 / 场景资产",
+          "仿真回放"
+        ]
+      },
+      {
+        "category": "视频生成 / ROCm 注意力",
+        "level": "NOV 17 MAIN · 非今日发布",
+        "title": "Diffusers 为 AMD gfx1100 优化长序列注意力",
+        "summary": "K/V 合计达到 60 MiB 时先转成连续布局，再调用原生 SDPA。",
+        "why": "作者用 32 GB Radeon Pro W7800、BF16 和分组卸载运行 LTX-2.5，960×544、121 帧、8 步时，单个 Transformer 步骤从 9.26 秒降到 6.81 秒，潜变量逐位一致。当前限 gfx1100、非 torch.compile 路径；Diffusers 代码 Apache-2.0，权重按各模型条款。",
+        "source": "https://github.com/huggingface/diffusers/pull/15291",
+        "meta": [
+          "11 月 17 日 20:13",
+          "W7800 32 GB / ROCm",
+          "单步基准"
+        ]
+      },
+      {
+        "category": "FPGA / Gowin 工具链测试",
+        "level": "NOV 17 MAIN · 非今日发布",
+        "title": "Apicula 用开发版 Yosys 和 nextpnr 跑位流测试",
+        "summary": "CI 将 Gowin 分块随机测试从固定的 YoWASP 环境切到开发版工具。",
+        "why": "GW1N-9C、GW2A-18C、GW5A-25A 的通过、跳过和预期失败数与主干基线一致。Tang Nano 9K 和 20K 的开发版实板 CI 也通过。复现需要项目容器、Gowin IDE 与器件数据库；没有新增器件、时序或资源占用数据。",
+        "source": "https://github.com/YosysHQ/apicula/pull/618",
+        "meta": [
+          "11 月 17 日 21:21",
+          "Yosys 0.71+50 / nextpnr 开发版",
+          "Tang Nano 实板 CI"
+        ]
+      },
+      {
+        "category": "具身智能 / YAM 控制与反馈",
+        "level": "NOV 17 MAIN · 非今日发布",
+        "title": "LeRobot 改善 YAM 启停与 CAN 反馈",
+        "summary": "由 motorbridge 同时提供帧状态与时间，单臂标定时可保留另一臂的控制环。",
+        "why": "作者报告 123 项自动化测试通过，并列出单臂和双臂 YAM 实机测试，未量化任务成功率。需要 YAM 和 CAN、motorbridge 0.6；启用重力补偿还需 placo 和公开 URDF。更新范围是控制代码与模型描述，无新数据集或策略权重。",
+        "source": "https://github.com/huggingface/lerobot/pull/5380",
+        "meta": [
+          "11 月 17 日 19:08",
+          "YAM 单臂 / 双臂",
+          "有作者实机测试"
+        ]
+      },
+      {
+        "category": "具身智能 / Unitree H2 步态训练",
+        "level": "NOV 17 MAIN · 非今日发布",
+        "title": "Isaac Lab 加入 Unitree H2 平地和崎岖地形任务",
+        "summary": "公开 H2 仿真资产新增 RSL-RL PPO 配置，活跃碰撞体从 23 个减到 5 个。",
+        "why": "适合研究速度跟踪与步态的用户。作者在 Newton + MuJoCo Warp 3.17 和 OvPhysX 各做了 8 环境×128 步的冒烟检查。训练代码和资产入口随主干，暂无新训练结果、实体传感器配置、权重或真机数据。",
+        "source": "https://github.com/isaac-sim/IsaacLab/pull/8908",
+        "meta": [
+          "11 月 17 日 04:24",
+          "公开 USD / PPO 配置",
+          "仅仿真冒烟检查"
+        ]
+      },
+      {
+        "category": "浏览器游戏 / 同屏合作解谜",
+        "level": "趣味发现 / 非今日发布",
+        "title": "Between Two Notes：用两个人的路线点亮桥",
+        "summary": "两名角色各走一条路，用音符开关给对方搭桥。试玩含 8 关，建议先玩 10–20 分钟。",
+        "why": "官方免费 HTML5 试玩无需安装，推荐桌面用 WASD 和方向键同屏合作，也可单人操控，有触屏选项。网页进入需联网，页面提供自动存档，清除站点数据可能丢失进度。账号、离线及源码许可未验证，未实际试玩。",
+        "source": "https://tinyparadox.itch.io/between-two-notes-demo",
+        "sourceLabel": "作者页面 ↗",
+        "meta": [
+          "11 月 17 日 00:34",
+          "免费试玩 / 另有完整版",
+          "桌面键盘 / 触屏"
+        ],
+        "playUrl": "https://tinyparadox.itch.io/between-two-notes-demo",
+        "playLabel": "在线试玩"
+      },
+      {
+        "category": "浏览器游戏 / 数字连线",
+        "level": "趣味发现 / 非今日发布",
+        "title": "Pipknot：把骰子点数连成目标和",
+        "summary": "拖过接触的小骰子，让点数加总到目标。连得越长得分越高，建议玩 5–10 分钟。",
+        "why": "官方页提供 HTML5 入口和 49 MB macOS 下载。网页建议电脑鼠标拖拽，页面未显示网页付费门槛。手机、离线、账号和源码许可未验证，未实际试玩。",
+        "source": "https://lativegames.itch.io/pipknot",
+        "sourceLabel": "作者页面 ↗",
+        "meta": [
+          "11 月 14 日发布",
+          "HTML5 / 鼠标",
+          "macOS 可下载"
+        ],
+        "playUrl": "https://lativegames.itch.io/pipknot",
+        "playLabel": "在线玩 / 下载"
+      },
+      {
+        "category": "浏览器游戏 / 二元数独",
+        "level": "趣味发现 / 非今日发布",
+        "title": "0h h1：只用两种颜色填满棋盘",
+        "summary": "不能三个同色相邻，每行每列红蓝数量相等，且各行各列不能重复。建议先用 4×4 玩 5–10 分钟。",
+        "why": "官方免费网页用点击或轻触，也提供 iOS 和 Android 链接。账号用于可选成就与排行榜。首次打开网页需联网，离线和源码许可未验证，未实际试玩。",
+        "source": "https://0hh1.com/",
+        "sourceLabel": "作者页面 ↗",
+        "meta": [
+          "经典发现",
+          "免费 / 鼠标或触屏",
+          "iOS / Android"
+        ],
+        "playUrl": "https://0hh1.com/",
+        "playLabel": "在线玩"
+      }
+    ],
+    "deepDive": {
+      "title": "用一次来回导入测试验证 USD 仿真场景",
+      "text": "Isaac Lab 先读取已初始化环境的引擎值，再把 USD 本身没表达的关节驱动、惯量和材质补写到导出层。导出针对一个环境及其后端，启动随机化、接触设置和部分执行器细节仍会影响回放。建议固定资产版本、时间步和输入，在训练端与目标引擎比较短时回放的位姿和接触，再用它来交接策略验证。",
+      "source": "https://github.com/isaac-sim/IsaacLab/pull/8568"
+    },
+    "noise": "判断：把视频生成里一个注意力算子或一个 Transformer 步骤的提速直接换算成整段视频的出片时间，容易高估收益。VAE、分组卸载和 I/O 也要计入。"
+  },
+  {
   "date": "2026-11-17",
   "label": "NOV 17",
   "pulse": "图像工具继续降低量化模型接入和离线使用摩擦，AMD 显存估算也更贴近实测。",
