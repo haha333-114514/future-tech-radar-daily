@@ -1,5 +1,175 @@
 window.DAILY_REPORTS = [
   {
+    "date": "2026-11-20",
+    "label": "NOV 20",
+    "pulse": "本期最值得复查的是接口兼容性和验证细节。Diffusers 可接收另一套训练工具的 LoRA，ComfyUI 可读新版 SPZ，Yosys 和 LeRobot 分别修复了会影响验证结果的状态与输入。研究截至北京时间 11:04，收录 7 条技术更新和 3 项趣味发现。",
+    "metrics": [
+      {
+        "value": "10",
+        "label": "今日条目"
+      },
+      {
+        "value": "5",
+        "label": "本地可部署"
+      },
+      {
+        "value": "2",
+        "label": "具身进展"
+      },
+      {
+        "value": "2",
+        "label": "FPGA / EDA"
+      }
+    ],
+    "items": [
+      {
+        "category": "视频生成 / HunyuanVideo LoRA",
+        "level": "NOV 19 MAIN · 非今日发布",
+        "title": "Diffusers 可加载 musubi-tuner 训练的 HunyuanVideo LoRA",
+        "summary": "识别 musubi-tuner 的权重键格式，将缩放系数并入权重后，交给现有转换器。",
+        "why": "适合在训练工具和 Diffusers 之间迁移 LoRA。作者核对 520 个模块的权重形状，无缺失或不匹配。相关 CPU 测试通过，未提供完整 GPU 出片的画质或显存数据。需要含补丁的 Diffusers 构建、匹配的基模及 LoRA，权重许可分别核对。",
+        "source": "https://github.com/huggingface/diffusers/pull/15346",
+        "meta": [
+          "11 月 19 日 14:38",
+          "musubi-tuner / Diffusers",
+          "CPU 测试与形状对照"
+        ]
+      },
+      {
+        "category": "三维重建 / Gaussian Splat 格式",
+        "level": "NOV 20 MAIN · 07:15 北京时间",
+        "title": "ComfyUI 可读取 SPZ v4 点云",
+        "summary": "File3DToSplat 识别新版头部，并用 Zstandard 解码位置、透明度、颜色、尺度和旋转。",
+        "why": "适合将新版 SPZ 导入 ComfyUI 工作流。需要 Python 3.14+ 的标准库或已装 backports.zstd，旧版 SPZ 解码路径保留。此读取路径跳过球谐系数，不能把它当成保留全部渲染属性的转换。变更说明没有给出大场景内存或速度数据。",
+        "source": "https://github.com/Comfy-Org/ComfyUI/pull/17852",
+        "meta": [
+          "SPZ v4 / Zstandard",
+          "主干更新",
+          "不读取球谐系数"
+        ]
+      },
+      {
+        "category": "视频生成 / H3 条件控制",
+        "level": "NOV 19 MAIN · 非今日发布",
+        "title": "InvokeAI 支持按任务切换 H3 混合检查点",
+        "summary": "支持双任务的检查点可在 FL2VA 与 Ref2VA 之间选择，设置会传入模型加载、工作流和参数召回。",
+        "why": "适合已有混合检查点且想复用同一权重的用户。自动检测仍是默认。显式切换需要适配检查点。作者覆盖双向切换与召回测试，未跑 GPU 推理和安装部署。本期没有显存或速度基准。",
+        "source": "https://github.com/invoke-ai/InvokeAI/pull/10141",
+        "meta": [
+          "11 月 19 日 12:09",
+          "双任务检查点",
+          "工作流与召回测试"
+        ]
+      },
+      {
+        "category": "FPGA / Yosys 锁存器综合",
+        "level": "NOV 20 MAIN · 03:03 北京时间",
+        "title": "Yosys 修复 async2sync 转换后丢失锁存器状态",
+        "summary": "异步复位或置位解除时，旧转换可能丢失已写入的状态。更新令内部保存状态跟随输出值。",
+        "why": "适合对 GateMate CC_DLT 或相关异步控制锁存器使用 async2sync 的 RTL 工程。提交用两种复位值做三步 SAT 检查。采用时可用自己的 RTL 与转换后网表做等价性验证，当前没有实板、时序或资源指标。",
+        "source": "https://github.com/YosysHQ/yosys/pull/6520",
+        "meta": [
+          "GateMate CC_DLT",
+          "主干 / SAT 最小用例",
+          "无实板时序数据"
+        ]
+      },
+      {
+        "category": "FPGA / Gowin GW5 位流",
+        "level": "NOV 19 MAIN · 非今日发布",
+        "title": "Apycula 修正 GW5 B 位 I/O 逻辑位流位置",
+        "summary": "打包与反解改读写 IOBB 的偏移单元。此前在主单元读写时会漏掉 B 位逻辑配置。",
+        "why": "适合用 GW5 串并转换或 DDR I/O 的开发者。作者对 GW5A-25A 做分块随机测试和样例回放，部分配置仍与厂商输出不同。60B、138C 复用代码和布局，但尚无法做端到端验证。本期没有实板或时序数据。",
+        "source": "https://github.com/YosysHQ/apicula/pull/639",
+        "meta": [
+          "11 月 19 日 23:29",
+          "GW5A-25A / 位流对照",
+          "60B、138C 待验证"
+        ]
+      },
+      {
+        "category": "具身智能 / 语言条件仿真评估",
+        "level": "NOV 19 MAIN · 非今日发布",
+        "title": "LeRobot 给 ALOHA 与 PushT 传入训练数据里的任务指令",
+        "summary": "将评估传给语言策略的默认文本从 Gym 环境 ID 改为参考数据集指令，允许为自己的模型覆盖。",
+        "why": "适合评估 SmolVLA 等策略。作者在 M1 Pro MPS 的 ALOHA 转移方块仿真中，同组 50 回合触碰从 0 到 32 次，成功从 0 到 2 次。结果显示提示词会影响策略行动，成功率仍低。更新的是评估代码，沿用参考数据和检查点，未作真机验证。",
+        "source": "https://github.com/huggingface/lerobot/pull/5390",
+        "meta": [
+          "11 月 19 日 18:44",
+          "M1 Pro / MPS",
+          "ALOHA 仿真 2/50"
+        ]
+      },
+      {
+        "category": "机器人仿真 / 服务生命周期",
+        "level": "NOV 20 MAIN · 00:21 北京时间",
+        "title": "LeRobot 修复仿真服务退出时可能卡住的问题",
+        "summary": "SIGTERM 与 SIGINT 的处理函数只设置停止标志，清理交还服务循环，避免在同一线程重复获取锁。",
+        "why": "适合在批处理调度或反复重启环境服务时使用。作者在 macOS 与 Linux ARM64 CPU 环境各有 236 项通过，1 项 CUDA 测试跳过。回归覆盖条件锁持有时的信号与监听器释放，未评估故障发生频率或实体设备行为。",
+        "source": "https://github.com/huggingface/lerobot/pull/5295",
+        "meta": [
+          "Zenoh 1.10.2",
+          "macOS / Linux ARM64",
+          "受控退出回归"
+        ]
+      },
+      {
+        "category": "浏览器游戏 / 函数组合解谜",
+        "level": "趣味发现 / 非今日发布",
+        "title": "Cube Composer 把彩色方块变成目标图案",
+        "summary": "点击或拖入一串变换，让方块堆叠、筛选和变色，逐关匹配目标。建议从开头几关玩 10 分钟。",
+        "why": "作者网页可直接打开，未见登录或付费入口。桌面鼠标可点选或拖拽，手机与网页离线未测试。PureScript 源码采用 MIT。仅核对官方页面，未实际试玩。",
+        "source": "https://github.com/sharkdp/cube-composer",
+        "meta": [
+          "逻辑谜题",
+          "桌面鼠标",
+          "MIT"
+        ],
+        "playUrl": "https://david-peter.de/cube-composer/",
+        "playLabel": "打开网页游戏",
+        "sourceLabel": "项目源码"
+      },
+      {
+        "category": "创意编程 / 点阵动画",
+        "level": "趣味发现 / 非今日发布",
+        "title": "tixy.land 用一行表达式画动画",
+        "summary": "在输入框改动时间和坐标的表达式，观察点阵如何出现波纹、棋盘或旋转图案。建议用 5–10 分钟改一个例子。",
+        "why": "网页有直接输入框，未见账号或付费要求。桌面用键盘输入，手机和离线未测试。作者公开源码，未确认代码许可。仅核对页面入口，未实际操作。",
+        "source": "https://github.com/aemkei/tixy",
+        "meta": [
+          "短表达式 / 点阵",
+          "浏览器键盘",
+          "许可未确认"
+        ],
+        "playUrl": "https://tixy.land/",
+        "playLabel": "打开点阵编辑器",
+        "sourceLabel": "项目源码"
+      },
+      {
+        "category": "本地游戏 / Game Boy 平台跳跃",
+        "level": "趣味发现 / 非今日发布",
+        "title": "Lead Kid 试玩版练短跳与单屏闯关",
+        "summary": "小铅块只能跳一点点，碰到障碍就从当前房间重来。试玩含首关，建议先玩 5–10 分钟，可把速度减半。",
+        "why": "作者提供网页试玩和 64 KB 的 Game Boy ROM。桌面可用方向键或 A/D 移动，X/Z 等键跳跃。网页可直接进入，作者主页另有付费标价。已有兼容模拟器可用 ROM 离线，手机未测试。试玩代码 GPL-3.0，完整版本状态未核实。",
+        "source": "https://github.com/BitBangGames/lead_kid_demo",
+        "meta": [
+          "首关试玩",
+          "浏览器 / Game Boy ROM",
+          "GPL-3.0 试玩代码"
+        ],
+        "playUrl": "https://bit-bang-games.itch.io/lead-kid",
+        "playLabel": "网页试玩或下载 ROM",
+        "sourceLabel": "项目源码"
+      }
+    ],
+    "deepDive": {
+      "title": "先验证语言提示，再解释机器人仿真分数",
+      "text": "训练数据中的自然语言指令决定了策略见到的任务条件。评估时误传环境 ID，即使模型、相机和种子一致，也会改变输入分布。LeRobot 的对照中，恢复数据集指令后出现更多有效接触，但成功只有 2/50。复现时可固定权重与种子，记录实际传入的文本，并同时比较接触、完成和失败原因。这样能区分评估接线失误和策略能力不足。",
+      "source": "https://github.com/huggingface/lerobot/pull/5390"
+    },
+    "noise": "判断：支持更多导入格式容易被解读成跨工具无损互通。LoRA 的转换需要匹配基模，SPZ 的读取路径也只覆盖部分属性。看重画质或完整属性时，应先用自己的样例做对照。"
+  },
+  {
     "date": "2026-11-19",
     "label": "NOV 19",
     "pulse": "图像工具的编辑能力与跨设备运行继续改进，VHDL 仿真也修正了一个会改变信号时间的观察器问题。截至北京时间 10:07，收录 7 条技术更新和 3 项趣味发现。",
