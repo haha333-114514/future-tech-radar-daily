@@ -1,5 +1,177 @@
 window.DAILY_REPORTS = [
   {
+    "date": "2026-11-21",
+    "label": "NOV 21",
+    "pulse": "本期关注两个容易慢在前端的步骤。Verilator 减少断言自动机的重复构建，Yosys 复用综合遍历结果。视频与机器人方向则有 Cosmos3 并行和关节映射更新。截至北京时间 10:43，收录 7 条技术更新、3 项趣味发现。",
+    "metrics": [
+      {
+        "value": "10",
+        "label": "今日条目"
+      },
+      {
+        "value": "6",
+        "label": "本地可部署"
+      },
+      {
+        "value": "2",
+        "label": "具身进展"
+      },
+      {
+        "value": "3",
+        "label": "FPGA / EDA"
+      }
+    ],
+    "items": [
+      {
+        "category": "FPGA / SystemVerilog 断言编译",
+        "level": "NOV 21 MAIN · 09:36 北京时间",
+        "title": "Verilator 按依赖顺序编译 SVA 自动机",
+        "summary": "每个链接节点等依赖就绪后构建一次，减少在整个图上反复重算。",
+        "why": "适合编译耗时主要花在复杂 SVA 的项目。作者构造的重复分支用例里，编译总耗时有 32.4 秒降到 0.13 秒的案例，取三次最快值，生成 C++ 一致。项目应单独测编译耗时与仿真吞吐，当前没有实板或两者的普适基准。",
+        "source": "https://github.com/verilator/verilator/pull/9293",
+        "meta": [
+          "SVA 编译 / C++ 输出",
+          "构造用例 32.4 → 0.13 秒",
+          "主干合入"
+        ]
+      },
+      {
+        "category": "视频生成 / Cosmos3 张量并行",
+        "level": "NOV 20 MAIN · 非今日发布",
+        "title": "Diffusers 原生支持 Cosmos3 张量并行",
+        "summary": "将注意力投影和 MLP 分片接入库内并行 API 与分片加载，统一了此前示例里的部分并行逻辑。",
+        "why": "适合有多卡 PyTorch 环境的 Cosmos3 使用者。作者在 4 张 GB200 上测试，Super 官方 189 帧 720×1280 工作流与旧示例 TP4 产物逐字节一致。所测延迟中位数差异最多 1.8%，本次未加入原生上下文并行，未验证消费级显卡。代码 Apache-2.0，模型 OpenMDW 1.1。",
+        "source": "https://github.com/huggingface/diffusers/pull/15137",
+        "meta": [
+          "11 月 20 日 11:42",
+          "4× GB200 / TP4",
+          "BF16 与 FP32 检查"
+        ],
+        "playUrl": "https://huggingface.co/nvidia/Cosmos3-Super",
+        "playLabel": "模型与授权"
+      },
+      {
+        "category": "扩散推理 / 并行随机数",
+        "level": "NOV 20 MAIN · 非今日发布",
+        "title": "Diffusers 同步并行组的默认随机数",
+        "summary": "推理未显式传入生成器时，让并行组各 rank 使用一致的随机抽样。",
+        "why": "适合维护多卡扩散推理的开发者。上游测试覆盖初始种子不同和种子相同但随机流偏移不同的场景。需包含该修复的版本，跨设备、精度和后端的完整可复现性仍需分别验证。",
+        "source": "https://github.com/huggingface/diffusers/pull/15141",
+        "meta": [
+          "11 月 20 日 22:53",
+          "PyTorch 多进程组",
+          "默认 RNG 对齐"
+        ]
+      },
+      {
+        "category": "FPGA / Yosys 锁存器综合",
+        "level": "NOV 20 MAIN · 非今日发布",
+        "title": "Yosys 缓存 proc_dlatch 的多路器反馈遍历",
+        "summary": "共享子图的遍历结果可按查询复用，避免同一节点沿不同路径被重复展开。",
+        "why": "适合被综合前端卡住的 RTL 工程。作者报告 CVA6 16 项 TLB 的旧流程卡了超过 9 小时。构造用例 32 层的旧耗时约 13 小时是外推值，补丁后测试在计时精度下显示 0.00 秒，仍推断出同两个锁存器。没有时序、资源或实板结论。",
+        "source": "https://github.com/YosysHQ/yosys/pull/6521",
+        "meta": [
+          "11 月 20 日 17:21",
+          "CVA6 / proc_dlatch",
+          "共享子图记忆化"
+        ]
+      },
+      {
+        "category": "FPGA / DSP 寄存器打包",
+        "level": "NOV 20 MAIN · 非今日发布",
+        "title": "Yosys 保留未吸收进 DSP 的寄存器初值",
+        "summary": "仅清除真正移进 DSP 的位上的初值，普通触发器中的其他位保留原来的初始化。",
+        "why": "适合遇到部分位带初值时综合中止的工程。上游覆盖 Xilinx DSP48E1、Spartan DSP48A1 和级联，小型案例做了等价性检查。Microchip 测试只走到 DSP 打包，因为后续综合仍不接受初始化的普通触发器。本次没有实板验证。",
+        "source": "https://github.com/YosysHQ/yosys/pull/6504",
+        "meta": [
+          "11 月 20 日 17:17",
+          "Xilinx DSP48 / Microchip",
+          "综合与等价性回归"
+        ]
+      },
+      {
+        "category": "具身智能 / 关节顺序映射",
+        "level": "NOV 21 MAIN · 02:59 北京时间",
+        "title": "LeRobot 支持在处理流程配置关节重排",
+        "summary": "新增可保存的处理步骤，按索引重排或选取观测与动作，示例展示 Unitree G1 和 SONIC 的顺序转换。",
+        "why": "适合接入使用不同关节顺序的策略。采用时需从机器人与模型配置核对索引、维度及归一化统计的顺序。上游覆盖索引、张量形状与配置往返，没有发布新的权重、数据集或实体测试结果。",
+        "source": "https://github.com/huggingface/lerobot/pull/5446",
+        "meta": [
+          "G1 / SONIC 映射示例",
+          "代码与配置",
+          "仅软件验证"
+        ]
+      },
+      {
+        "category": "机器人仿真 / EnvHub 发布",
+        "level": "NOV 20 MAIN · 非今日发布",
+        "title": "LeRobot EnvHub 改从 Hugging Face Spaces 加载环境",
+        "summary": "本机和 Docker 构建路径都查找 Space，旧 Model 仓库里的环境需要迁移。",
+        "why": "适合维护仿真环境的团队。迁移时需按上游说明提供 Space 的 SDK 元数据。优先选可信作者与固定修订，因为环境由代码定义。上游有针对仓库类型的测试与 SO-101 示例，未给出新真机结果或硬件性能。",
+        "source": "https://github.com/huggingface/lerobot/pull/5361",
+        "meta": [
+          "11 月 20 日 22:17",
+          "Space / Docker",
+          "已有 EnvHub 部署需迁移"
+        ]
+      },
+      {
+        "category": "浏览器游戏 / 光线混色解谜",
+        "level": "趣味发现 / 非今日发布",
+        "title": "Prism 旋转棱镜给水晶配色",
+        "summary": "转动镜子分光，把红绿蓝光束合成水晶要求的颜色。作者页现有 50 关，推荐先玩 5–10 分钟。",
+        "why": "官方页可直接进入，未见游玩付费或账号要求，留言需要登录。支持鼠标点击和触屏，桌面键盘还可撤销、重置、提示。网页需联网，离线和源码许可未确认。作者说明默认发送关卡统计，可在 Save & Settings 关闭，进度可导出。",
+        "source": "https://twentysixgames.itch.io/prism/devlog/1792415/drop-1-the-path-medium-prism-gets-its-teeth",
+        "meta": [
+          "11 月 20 日扩至 50 关",
+          "桌面鼠标 / 触屏",
+          "HTML5"
+        ],
+        "playUrl": "https://twentysixgames.itch.io/prism",
+        "playLabel": "打开网页游戏",
+        "sourceLabel": "作者页面"
+      },
+      {
+        "category": "浏览器游戏 / 三维截面平台解谜",
+        "level": "趣味发现 / 非今日发布",
+        "title": "FLATLANDER 用切面把勺子变成电梯",
+        "summary": "前后滑动切面，同一个三维物体会在当前平面形成不同落脚点。先用 10–15 分钟试第一组物件。",
+        "why": "作者提供桌面网页入口，以及未签名的 Windows 下载包。用键盘或手柄，网页去官方页直接打开，未见账号或网页付费要求。作者称会保存进度，清站点数据前留意存档。手机、离线和源码许可未确认。",
+        "source": "https://superiorg.itch.io/flatlander",
+        "meta": [
+          "11 月 20 日发布",
+          "桌面键盘 / 手柄",
+          "官方网页可玩"
+        ],
+        "playUrl": "https://superiorg.itch.io/flatlander",
+        "playLabel": "在线玩或查看下载",
+        "sourceLabel": "作者页面"
+      },
+      {
+        "category": "本地游戏 / 单键跑酷",
+        "level": "趣味发现 / 非今日发布",
+        "title": "MARU RUN 用一次跳跃跨过越来越快的路面",
+        "summary": "球会自己前进，空格或点屏幕跳跃。速度升高后可以挑战个人距离记录，建议先跑 3–5 分钟。",
+        "why": "官方页有在线入口和 55 kB 离线 HTML 包，桌面用空格，手机建议横屏轻触。未见付费或账号要求。作者称成绩和成就存在浏览器里，清数据可能丢失。源码许可未确认。",
+        "source": "https://ti63.itch.io/maru-run",
+        "meta": [
+          "11 月 20 日 22:49 发布",
+          "桌面 / 手机横屏",
+          "作者提供离线 HTML"
+        ],
+        "playUrl": "https://ti63.itch.io/maru-run",
+        "playLabel": "在线玩或下载离线版",
+        "sourceLabel": "作者页面"
+      }
+    ],
+    "deepDive": {
+      "title": "把断言编译耗时和仿真吞吐分开测",
+      "text": "SVA 编译会将序列和重复分支展开成自动机。旧实现在依赖尚未全部解析时对整个图多轮扫过。按依赖顺序生成链接后，共享节点只需计算一次，所列测试的生成 C++ 保持一致。项目可挑一组带长重复分支的真实断言，用相同版本配置比较冷编译耗时、生成物和运行阶段吞吐。构造用例的收益主要来自被消掉的重复展开。",
+      "source": "https://github.com/verilator/verilator/pull/9293"
+    },
+    "noise": "判断：编译基准上的百倍提速用于推断整套回归或实板频率，容易高估收益。总耗时还取决于生成的 C++ 编译、仿真执行及其他前端阶段。"
+  },
+  {
     "date": "2026-11-20",
     "label": "NOV 20",
     "pulse": "本期最值得复查的是接口兼容性和验证细节。Diffusers 可接收另一套训练工具的 LoRA，ComfyUI 可读新版 SPZ，Yosys 和 LeRobot 分别修复了会影响验证结果的状态与输入。研究截至北京时间 11:04，收录 7 条技术更新和 3 项趣味发现。",
