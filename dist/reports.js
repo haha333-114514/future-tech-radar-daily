@@ -1,5 +1,177 @@
 window.DAILY_REPORTS = [
   {
+    "date": "2026-11-23",
+    "label": "NOV 23",
+    "pulse": "今天的图像工作流更新分别落在可控、可复现和本地运行。Krea-2 加了深度约束，部分卸载权重可以异步传输，stable-diffusion.cpp 能记录实际执行的扩散脚本。截至北京时间 13:41，收录 7 条技术更新和 3 项趣味发现。",
+    "metrics": [
+      {
+        "value": "10",
+        "label": "今日条目"
+      },
+      {
+        "value": "7",
+        "label": "本地可部署"
+      },
+      {
+        "value": "0",
+        "label": "具身进展"
+      },
+      {
+        "value": "0",
+        "label": "FPGA / EDA"
+      }
+    ],
+    "items": [
+      {
+        "category": "图像生成 / Krea-2 深度控制",
+        "level": "NOV 23 MAIN · 12:25 北京时间",
+        "title": "InvokeAI 接入 Krea-2 Control LoRA",
+        "summary": "可在画布或节点工作流里，将深度图经 VAE 编码后作为生成条件。",
+        "why": "适合保留取景与透视结构的用户。作者在 Linux RTX 5090 上用 Krea-2 Turbo NVFP4 生成 880×1184 图像，8 步深度控制样本约 8.8 秒、峰值 13,970 MB。单机样本仅供选型，需匹配基模、VAE 和深度适配器。适配器约 862 MB，模型卡标注 Krea 2 Community License。",
+        "source": "https://github.com/invoke-ai/InvokeAI/pull/10332",
+        "meta": [
+          "RTX 5090 / Linux",
+          "Turbo NVFP4 / 8 步",
+          "深度 LoRA 862 MB"
+        ],
+        "playUrl": "https://huggingface.co/Patil/Krea-2-depth-controlnet",
+        "playLabel": "查看适配器与授权"
+      },
+      {
+        "category": "图像生成 / CPU 权重异步传输",
+        "level": "NOV 23 MAIN · 05:55 北京时间",
+        "title": "InvokeAI 可在计算时预传部分卸载的权重",
+        "summary": "将主存权重锁页，通过旁路传输流把复制与 GPU 计算重叠。该选项默认关闭。",
+        "why": "适合模型只能部分装进显存的 CUDA 或 ROCm 任务。RTX 4090 Windows、ERNIE-Image Turbo BF16、1024²、8 步时，作者测得 20.3→8.7 秒且图像逐位一致。测试刻意把显存缓存限制到 8 GB，主存缓存设为 40 GB。GGUF、SDNQ 和部分 LoRA 补丁路径仍走同步复制。",
+        "source": "https://github.com/invoke-ai/InvokeAI/pull/10265",
+        "meta": [
+          "CUDA / ROCm",
+          "锁页主存 / 额外缓冲",
+          "测试限制显存缓存为 8 GB"
+        ]
+      },
+      {
+        "category": "图像与视频 / 扩散脚本工作流",
+        "level": "NOV 22 MAIN · 非今日发布",
+        "title": "stable-diffusion.cpp 增加 Diffusion Graph Language",
+        "summary": "通过脚本组合模型、条件、采样、张量和媒体操作。CLI 可校验并执行，C API 可接张量和读取结构化结果。",
+        "why": "适合嵌入图像、视频或超分工作流的开发者。引擎可复用已载入组件、按 RAM/VRAM 预算安排权重，并在生成信息里记录执行源码。使用含 DGL 的主干构建，依赖所选模型与后端。合入说明未列跨平台端到端性能对照。",
+        "source": "https://github.com/leejet/stable-diffusion.cpp/pull/2396",
+        "meta": [
+          "11 月 22 日 23:42 合入",
+          "CLI / C API",
+          "记录执行源码"
+        ]
+      },
+      {
+        "category": "图像编辑 / VAE 编码复现",
+        "level": "NOV 23 MAIN · 02:29 北京时间",
+        "title": "InvokeAI 为多条 VAE 路径改用后验均值",
+        "summary": "包括 Z-Image、SDXL、Anima 和 Wan 部分路径。编码同一图像时直接取高斯后验的代表值，去掉一次未设种子的抽样。",
+        "why": "适合回放图生图或修复流程。作者以小型真实 VAE 验证受影响编码路径的 latent 重复一致，尚未逐模型完成 GPU 端到端生成验证。更新后重跑曾保存的工作流，输出可能与旧版略有差异。",
+        "source": "https://github.com/invoke-ai/InvokeAI/pull/10293",
+        "meta": [
+          "固定输入 / VAE latent",
+          "9 条编码路径回归",
+          "GPU 整流程待测"
+        ]
+      },
+      {
+        "category": "图像修复 / Apple MPS",
+        "level": "NOV 23 MAIN · 10:17 北京时间",
+        "title": "ComfyUI 修复 Apple MPS 分条 VAE 编码崩溃",
+        "summary": "在每条编码之后同步 MPS，保留分条处理以控制内存。",
+        "why": "适合在 Apple Silicon 上处理图像扩边的用户。作者用 M4 Pro 48 GB、PyTorch 2.12.1 和 Qwen Image 2.1 重测，两种尺寸的单独编码由 12/12 报错到 0/12，整条扩边流程修复后 3/3 完成。其他芯片、版本和同步带来的耗时尚无测量。",
+        "source": "https://github.com/Comfy-Org/ComfyUI/pull/17757",
+        "meta": [
+          "M4 Pro / 48 GB 样本",
+          "Qwen Image 2.1",
+          "MPS 端到端 3/3"
+        ]
+      },
+      {
+        "category": "图像编辑 / H3 CUDA VAE 编码",
+        "level": "NOV 22 MAIN · 非今日发布",
+        "title": "stable-diffusion.cpp 减少 H3 VAE 编码的 CUDA 启动开销",
+        "summary": "在空间填充阶段合并帧与通道维度，减少按通道逐次启动的内核。",
+        "why": "适合笔记本本地 H3-Image 编辑。作者用 Windows RTX 5070 Ti Laptop 12 GB、INT8 扩散、FP16 VAE 和 CPU 卸载测试，初轮参考图编码 19.15→3.04 秒，含启动和保存的总耗时 80.17→62.44 秒。两次输出与基线像素一致。视频、Metal 和 Vulkan 未测。",
+        "source": "https://github.com/leejet/stable-diffusion.cpp/pull/2369",
+        "meta": [
+          "11 月 22 日 22:04 合入",
+          "CUDA / 12 GB 笔记本 GPU",
+          "初轮整流程约 22% 缩短"
+        ]
+      },
+      {
+        "category": "自托管 / InvokeAI 登录默认值",
+        "level": "NOV 23 MAIN · 01:34 北京时间",
+        "title": "InvokeAI 默认启用多用户登录",
+        "summary": "新装或配置未明确设置时进入管理员初始化，官方 Compose 默认只绑定本机回环。",
+        "why": "适合在局域网自托管的用户。升级前检查绑定地址和登录配置，并先在本机完成管理员初始化。旧单用户项目仍保留，但不会自动归入新建账户，已有工作应按项目文档迁移。变更已合入主干，部署应核对所用发行版。",
+        "source": "https://github.com/invoke-ai/InvokeAI/pull/10316",
+        "meta": [
+          "默认启用登录",
+          "Compose 回环绑定",
+          "旧项目所有权需迁移"
+        ]
+      },
+      {
+        "category": "本地游戏 / Game Boy Color 像素冒险",
+        "level": "趣味发现 / 11 月 23 日发布",
+        "title": "Of The World 探索 Temmie Chang 的像素世界",
+        "summary": "用前 15–20 分钟看看场景与角色，作者建议先玩 Escaped Chasm 和 Dweller's Empty Path。",
+        "why": "网页首次加载需联网，作者提供 2 MB GBC ROM 随意付费下载，可用兼容模拟器离线游玩。网页入口未见登录要求，推荐桌面键盘，移动端未测。游戏含闪光，作者提醒重新上传网页版本可能清掉存档。源码许可未确认。",
+        "source": "https://tuyoki.itch.io/of-the-world",
+        "meta": [
+          "11 月 23 日 01:00 发布",
+          "浏览器 / GBC ROM",
+          "闪光与网页存档提醒"
+        ],
+        "playUrl": "https://tuyoki.itch.io/of-the-world",
+        "playLabel": "在线玩或下载 ROM",
+        "sourceLabel": "作者页面"
+      },
+      {
+        "category": "浏览器游戏 / 风景拼图",
+        "level": "趣味发现 / 非今日发布",
+        "title": "Scenic Pieces 每次拼一块风景",
+        "summary": "网页试玩有六幅图，可选尺寸，也能关掉参考图只看形状。建议先玩 5–10 分钟。",
+        "why": "作者于 11 月 22 日公告免费试玩，支持鼠标和触屏，试玩入口未见登录要求。桌面完整版含 60 幅图，标价 €6.99，作者提供 Windows/Linux x64 与 Apple Silicon macOS 离线版。网页需联网进入，源码许可未确认。",
+        "source": "https://tidogagame.itch.io/scenic-pieces",
+        "meta": [
+          "11 月 22 日试玩公告",
+          "鼠标 / 触屏",
+          "免费试玩 / 付费完整版"
+        ],
+        "playUrl": "https://tidogagame.itch.io/scenic-pieces",
+        "playLabel": "打开免费试玩",
+        "sourceLabel": "作者页面"
+      },
+      {
+        "category": "本地游戏 / 终端太空模拟",
+        "level": "趣味发现 / 非今日发布",
+        "title": "Orbital 在 Go 终端界面里玩太空小游戏",
+        "summary": "Bubble Tea 做成短篇 TUI 太空模拟，适合花 5–10 分钟体验纯文字界面。",
+        "why": "作者页提供可全屏的网页版本，以及 Windows/Linux x64、macOS ARM64 下载，下载可自行定价。建议桌面键盘，试玩入口未见登录要求。手机、下载版是否全程离线及源码许可未核实。",
+        "source": "https://im-nova.itch.io/orbital",
+        "meta": [
+          "11 月 22 日 10:34 发布",
+          "Go / Bubble Tea",
+          "网页版与三个桌面包"
+        ],
+        "playUrl": "https://im-nova.itch.io/orbital",
+        "playLabel": "在线玩或查看下载",
+        "sourceLabel": "作者页面"
+      }
+    ],
+    "deepDive": {
+      "title": "先判断显存卸载是否在等待传输",
+      "text": "模型权重只驻留一部分时，剩余权重会在推理中跨 CPU 与 GPU 传输。InvokeAI 用锁页主存和独立传输流把一部分复制藏在计算之下。试用时固定同一个模型、显存缓存与分辨率，比较开关两次的总耗时、峰值显存和主存占用，同时检查日志是否退回同步路径。完整装入显存的模型与特定量化格式不适用这组样本。",
+      "source": "https://github.com/invoke-ai/InvokeAI/pull/10265"
+    },
+    "noise": "判断：把异步传输样本的倍数当作升级后的普遍提速，容易高估收益。模型是否部分卸载、主存是否足够，以及复制能与多少计算重叠，都会改变结果。"
+  },
+  {
     "date": "2026-11-22",
     "label": "NOV 22",
     "pulse": "本期关注内存开销随工作量增长的两处瓶颈。ComfyUI 优化 FLUX.2 多视角的激活内存与长视频融合缓冲。另有 NAT VLA 的流式动作接口和 Verilator 编译优化。截至北京时间 11:21，收录 6 条技术更新、3 项趣味发现。",
