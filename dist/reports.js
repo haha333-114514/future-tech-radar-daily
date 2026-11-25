@@ -1,5 +1,192 @@
 window.DAILY_REPORTS = [
   {
+    "date": "2026-11-25",
+    "label": "NOV 25",
+    "pulse": "这期最值得试的是能自己读回海报文字并修订的 SenseNova U1.6。硬件和机器人方向也有可复核的数据，Apycula 补了 Gowin DSP 时序，LeRobot 把关节单位和标定换算抽成了通用步骤。共收录 8 条技术更新与 3 项趣味发现。",
+    "metrics": [
+      {
+        "value": "11",
+        "label": "今日条目"
+      },
+      {
+        "value": "8",
+        "label": "本地可部署"
+      },
+      {
+        "value": "1",
+        "label": "具身进展"
+      },
+      {
+        "value": "1",
+        "label": "FPGA / EDA"
+      }
+    ],
+    "items": [
+      {
+        "category": "图像生成 / 文字自审与修订",
+        "level": "NOV 24 RELEASE · 非今日发布",
+        "title": "SenseNova U1.6 开放权重，可回读海报文字再修订",
+        "summary": "同一模型可以先生图，再对照提示词写出批注，结合初稿生成修订版。官方还提供 4 步和 8 步 LoRA，以及 ComfyUI 工作流。",
+        "why": "适合做中英文海报和图文版式。官方 Linux/CUDA 的 BF16 balanced 配置建议 24 GB 显存、64 GB 内存、约 35 GB 磁盘；不是实测最低值。另有 FP8、INT8 ConvRot 和 Q4/Q6/Q8 GGUF，需匹配运行时。量化版公开验证范围以文生图冒烟为主，权重标注 Apache-2.0。",
+        "source": "https://github.com/OpenSenseNova/SenseNova-U1/blob/main/docs/u1.6_model.md",
+        "meta": [
+          "Linux / CUDA",
+          "官方建议 24 GB VRAM / 64 GB RAM",
+          "Apache-2.0 / BF16 与量化"
+        ],
+        "playUrl": "https://huggingface.co/sensenova/SenseNova-U1.6-8B-MoT",
+        "playLabel": "查看权重与许可"
+      },
+      {
+        "category": "图像与视频 / 扩散注意力",
+        "level": "NOV 24 MAIN · 非今日发布",
+        "title": "Diffusers 减少 RoPE 对 Q/K 的 FP32 临时复制",
+        "summary": "实数 RoPE 路径借助 FP32 三角表自动提升运算精度，省掉输入张量的显式转换和临时副本。",
+        "why": "适合直接用 Diffusers 主干的本地推理开发者。作者用随机权重构建同形状 BF16 流程，RTX 5090 上 CogVideoX-5B 的 49 帧样本从 38.53 秒降至 37.90 秒。样本不是画质测试，也没有给出峰值显存降幅。代码 Apache-2.0，需支持模型的 PyTorch 后端。",
+        "source": "https://github.com/huggingface/diffusers/pull/15215",
+        "meta": [
+          "11 月 24 日 11:54 合入",
+          "RTX 5090 / Radeon AI PRO R9700",
+          "BF16 / 主干"
+        ]
+      },
+      {
+        "category": "图像生成 / 本地 SDAPI 兼容",
+        "level": "NOV 24 MAIN · 非今日发布",
+        "title": "stable-diffusion.cpp 让 A1111 客户端能启动并取消出图",
+        "summary": "补齐部分客户端启动时请求的元数据接口，并为正在运行的 SDAPI 生成增加取消入口。",
+        "why": "适合保留现有客户端、把生成服务换成本地 C/C++ 后端的用户。作者在 Windows、Vulkan 和 RX 7800 XT 上验证取消第一项后，第二项可继续。部分元数据为空，写选项会返回成功但不应用，取消的生成返回错误而没有半成品。代码 MIT，需匹配模型文件和含补丁的服务端。",
+        "source": "https://github.com/leejet/stable-diffusion.cpp/pull/2349",
+        "meta": [
+          "11 月 24 日 22:24 合入",
+          "Windows / Vulkan / RX 7800 XT",
+          "MIT / 部分 SDAPI 兼容"
+        ]
+      },
+      {
+        "category": "FPGA / Gowin DSP 时序",
+        "level": "NOV 24 MAIN · 非今日发布",
+        "title": "Apycula 为 GW5A 芯片数据库导出 DSP 时序",
+        "summary": "从厂商旧格式记录补出六类 DSP 时序数据，并修正 C2/I1 的记录选择，为 nextpnr 提供数据。",
+        "why": "作者用 Gowin IDE 1.9.10.03 导出 SDF，对照 GW5A-25A、GW5AT-60B 和 GW5AST-138C。各配置检查的 25 条时序弧均未偏差超过 1 ps，三款器件的 DSP 记录字节相同，证据不能当作独立硬件实测。可用 PR 的七个 DSP 用例复核，nextpnr 消费端仍需跟踪。",
+        "source": "https://github.com/YosysHQ/apicula/pull/654",
+        "meta": [
+          "11 月 24 日 22:50 合入",
+          "25 条时序弧 / 厂商 SDF",
+          "未给出上板 Fmax 或资源变化"
+        ],
+        "playUrl": "https://github.com/YosysHQ/nextpnr/issues/1906",
+        "playLabel": "查看 nextpnr 跟进"
+      },
+      {
+        "category": "具身智能 / 关节标定",
+        "level": "NOV 25 MAIN · 01:20 北京时间",
+        "title": "LeRobot 把关节单位和标定换算做成可复用步骤",
+        "summary": "处理器对所选状态与动作维度应用比例和偏移，可逆向映射，并同步转换数据集统计。负比例可处理反向轴。",
+        "why": "适合把训练策略接到 SO-100/101 或双臂 YAM 的开发者。作者报告 567 项处理器测试通过，并用双臂 YAM 检查点验证单位换算，还对齐了原 SO-100/101 标定。公开的是 Python 处理代码与测试，无新增数据或权重。此 PR 无新传感器、专用算力或实体成功率数据。",
+        "source": "https://github.com/huggingface/lerobot/pull/5480",
+        "meta": [
+          "弧度与角度 / 夹爪范围",
+          "统计量随坐标变换",
+          "软件验证 / 无新增实机证据"
+        ]
+      },
+      {
+        "category": "本地 LLM 推理 / Adreno OpenCL",
+        "level": "NOV 25 MAIN · 08:42 北京时间",
+        "title": "llama.cpp 增加 Adreno 的量化 MoE OpenCL 内核",
+        "summary": "为多个 Q4/Q5/Q6 格式和 MXFP4 增加基于协作矩阵扩展的专家矩阵计算。相较前一期按体积量化，这是推理后端的变更。",
+        "why": "适合有兼容 Adreno 驱动和 OpenCL 构建环境的开发者。需选匹配格式的 MoE 权重，并确认新内核被选择。该提交未给出手机端的 tokens/s、内存或功耗对照。代码 MIT，模型授权独立。",
+        "source": "https://github.com/ggml-org/llama.cpp/commit/e6443bd7e",
+        "meta": [
+          "Adreno / OpenCL",
+          "Q4_0、Q4_K、Q5_K、Q6_K、MXFP4 等",
+          "主干 / 需兼容驱动"
+        ]
+      },
+      {
+        "category": "Python 工具链 / 锁文件校验",
+        "level": "NOV 25 RELEASE · 05:15 北京时间",
+        "title": "uv 0.13.10 检查已锁版本是否满足依赖声明",
+        "summary": "uv 会检查 uv.lock 中锁定的包版本是否匹配依赖要求，并在拒绝使用锁文件时补充原因。",
+        "why": "适合维护多平台 Python 项目和 CI 的开发者。可先用新版本复跑现有的锁文件检查，判断是否有此前未报出的不一致。正式发行包覆盖 Windows、macOS、Linux，官方项目采用 MIT 或 Apache-2.0。",
+        "source": "https://github.com/astral-sh/uv/releases/tag/0.13.10",
+        "meta": [
+          "0.13.10 稳定版",
+          "Windows / macOS / Linux",
+          "CI / 锁定依赖"
+        ]
+      },
+      {
+        "category": "数据库内核 / 查询剖析",
+        "level": "NOV 24 MAIN · 非今日发布",
+        "title": "DuckDB 可输出上一条已完成查询的剖析报告",
+        "summary": "v2 C API 与 C++ API 能直接取得引擎渲染后的报告，包括 JSON、文本和 Graphviz 等格式。",
+        "why": "适合维护数据库客户端和剖析界面的人，可以复用引擎渲染，在嵌入式 CPU 构建中验证。需启用剖析，连接有活跃查询时调用会返回资源占用错误。新增接口标为 unstable，适合用开发版评估。",
+        "source": "https://github.com/duckdb/duckdb/pull/29292",
+        "meta": [
+          "11 月 24 日 23:44 合入",
+          "C v2 / C++",
+          "引擎内置格式 / unstable"
+        ]
+      },
+      {
+        "category": "浏览器游戏 / 连锁布阵",
+        "level": "趣味发现 / 非今日发布",
+        "title": "One-Shot Domino 一次拉杆引爆整条连锁",
+        "summary": "先用鼠标摆好盘子、水桶和机关，再拉一次杆。看第一只老鼠碰到机关后，连锁能不能挡住剩下的队伍。建议花 5–10 分钟试第一张图。",
+        "why": "作者提供免费网页入口，桌面用鼠标和快捷键，发布帖说明无需注册。排行榜需联网，Windows 下载是有限试玩版，作者页未说明其全程离线表现。手机及源码许可未确认。",
+        "source": "https://mouseholegames.itch.io/one-shot-domino",
+        "meta": [
+          "11 月 23 日发布",
+          "桌面浏览器 / 鼠标",
+          "作者提供 Windows 试玩版"
+        ],
+        "playUrl": "https://mouseholegames.itch.io/one-shot-domino",
+        "playLabel": "在线玩或查看试玩版",
+        "sourceLabel": "作者页面"
+      },
+      {
+        "category": "浏览器游戏 / 触屏三消",
+        "level": "趣味发现 / 非今日发布",
+        "title": "Kitty Krush 给猫咪清出一条屋顶路",
+        "summary": "拖动或连点两只相邻的猫凑出三连。第二个屋顶可以试激光指针会清掉哪些格子，建议玩 5 分钟。",
+        "why": "电脑鼠标、手机触控均有官方说明。网页前两关免费，页面未见开玩前的登录要求。第三关及电脑离线版属于 3 美元起的支持版。源码许可未确认。",
+        "source": "https://atlasforgegames.itch.io/kitty-krush-rooftop-puzzles",
+        "meta": [
+          "11 月 22 日发布",
+          "桌面 / 手机",
+          "前两关免费"
+        ],
+        "playUrl": "https://atlasforgegames.itch.io/kitty-krush-rooftop-puzzles",
+        "playLabel": "在线玩",
+        "sourceLabel": "作者页面"
+      },
+      {
+        "category": "浏览器游戏 / 俯视角地牢探索",
+        "level": "趣味发现 / 非今日发布",
+        "title": "Alura Quest 靠谜语和墙上的线索找路",
+        "summary": "居民给谜语，捡到的道具也不附说明。自己试着撞墙、检查雕像、探索洞穴。试玩版包含三座地牢，建议先留 10–20 分钟。",
+        "why": "官方网页可启动免费试玩，页面未见开玩前的账号要求。建议桌面键鼠，手机、离线支持和源码授权未确认。页面有近期更新时间，未找到与该时间对应的改动说明。",
+        "source": "https://danyl4o.itch.io/alura-quest",
+        "meta": [
+          "11 月 7 日发布完整试玩版",
+          "浏览器 / 建议键鼠",
+          "开发中"
+        ],
+        "playUrl": "https://danyl4o.itch.io/alura-quest",
+        "playLabel": "在线试玩",
+        "sourceLabel": "作者页面"
+      }
+    ],
+    "deepDive": {
+      "title": "让生成模型读回海报，再检查它改对了什么",
+      "text": "SenseNova U1.6 让同一套权重按提示词生成初稿、回读并写出问题，再用初稿和批注生成修订版。作者在 UltraTextBench 的密集信息图子任务报告了相对单轮约 7% 的平均提升。训练和评估主要针对信息图，修订也会增加执行步骤，复杂布局或多参考图仍需验证。复现时可以固定同一批中英混排短句，用原始 BF16 权重成对跑单轮和自审，记录错字数、排版偏移与总耗时，单独检查原本正确的文字是否被改坏。",
+      "source": "https://github.com/OpenSenseNova/SenseNova-U1"
+    },
+    "noise": "判断：不要把基准中的平均提升直接当作任意海报的校对通过率。自审可能漏字，也可能改动已经正确的标题或版式，交稿前仍要回读原文。"
+  },
+  {
     "date": "2026-11-24",
     "label": "NOV 24",
     "pulse": "本地工具今天给了三种更细的控制：InvokeAI 可在放大细化时应用 LoRA，ComfyUI 可加载两档低位宽权重，stable-diffusion.cpp 可在任务间歇让出内存。另有 Yosys 断言作用域修复和 Isaac Lab 吸具仿真。收录 8 条技术更新与 3 项趣味发现。",
